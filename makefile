@@ -5,7 +5,8 @@ OBJDUMP := arm-none-eabi-objdump
 SIZE := arm-none-eabi-size
 
 CFLAGS := -O0 -ffreestanding -fno-pie -fno-stack-protector -g3 -march=armv7-m -mthumb -Wall -mgeneral-regs-only 
-CFLAGS += -I/home/juliabennett/Desktop/embeddedPCA/Include
+CFLAGS += -I/home/juliabennett/Desktop/embedded/Include
+CLFAGS += -I/home/juliabennett/Desktop/embedded/Include/dsp
 
 ODIR := obj
 SDIR := src

@@ -2,14 +2,14 @@
 #include "dsp/transform_functions.h"
 #include "dsp/matrix_functions.h"
 
-
 //replace anything fft with the libraries
 void fft_pca(float* input_buffer, float* output_buffer, void* args)
 {
 	//keep args in functions, args
-	static int* input_buf[] = {1, 2, 6, 4, 3, 9, 7, 0, 12, 4, 7, 23, 9, 2, 7 , 3, 1, 3, 7, 1, 2, 9, 2, 1, 4, 5, 3, 1, 8, 2, 1, 1};
+	int* input_buf[] = {1, 2, 6, 4, 3, 9, 7, 0, 12, 4, 7, 23, 9, 2, 7 , 3, 1, 3, 7, 1, 2, 9, 2, 1, 4, 5, 3, 1, 8, 2, 1, 1};
 	struct fft_pca_args* inputs = (struct fft_pca_args*) args;
 	
+	//data
 //	float* fft_buf[] = *output_buffer;
 	//output buffer
 	float* fft_buf = inputs->fft_buf;
@@ -56,38 +56,6 @@ void cov(float* A, float* cov_mat, float* means, uint32_t vec_len, uint32_t vec_
         }
     }
 }
-/*
-  @brief         Floating-point matrix initialization.
-  @param[in,out] S         points to an instance of the floating-point matrix structure
-  @param[in]     nRows     number of rows in the matrix
-  @param[in]     nColumns  number of columns in the matrix
-  @param[in]     pData     points to the matrix data array
-  @return        none
-*/
-
-typedef struct {
-       uint16_t numRows;     // number of rows of the matrix.
-       uint16_t numCols;     // number of columns of the matrix.
-       float32_t *pData;     // points to the data of the matrix.
-     } arm_matrix_instance_f32;
-
-void arm_mat_init_f32(
-  arm_matrix_instance_f32 * S,
-  uint16_t nRows,
-  uint16_t nColumns,
-  float32_t * pData)
-{
-  /* Assign Number of Rows */
-  S->numRows = nRows;
-
-  /* Assign Number of Columns */
-  S->numCols = nColumns;
-
-  /* Assign Data pointer */
-  S->pData = pData;
-}
-
-
 }
 /*
 //not specified for code, rework this section out

@@ -1,30 +1,33 @@
 #include <stdint.h>
-#include "dsp/transform_functions.h"
-#include "dsp/matrix_functions.h"
+#include "arm_math.h"
+
+//fft_pca(data, output, (void*) args);
+struct fft_pca_args {
+	void *args;
 
 
-//replace anything fft with the libraries
-void fft_pca(float* input_buffer, float* output_buffer, void* args)
+void fft_pca(float32_t* input_buffer, float32_t* output_buffer, void* args)
 {
-	//keep args in functions, args
-	static int* input_buf[] = {1, 2, 6, 4, 3, 9, 7, 0, 12, 4, 7, 23, 9, 2, 7 , 3, 1, 3, 7, 1, 2, 9, 2, 1, 4, 5, 3, 1, 8, 2, 1, 1};
 	struct fft_pca_args* inputs = (struct fft_pca_args*) args;
-	
-//	float* fft_buf[] = *output_buffer;
-	//output buffer
-	float* fft_buf = inputs->fft_buf;
-	float* cov_mat = inputs->cov_mat;
-	float* cov_mat_means = inputs->cov_mat_means;
+	float32_t* fft_buf = inputs->fft_buf;
+	float32_t* cov_mat = inputs->cov_mat;
+	float32_t* cov_mat_means = inputs->cov_mat_means;
 	uint32_t vec_len = inputs->vec_len;
 	uint32_t vec_num = inputs->vec_num;
 	
 	fft_obs_matrix(input_buf, fft_buf,  vec_len, vec_num);
 	vec_len = (vec_len/2 + 1); // since data is real, vectors after fft are length n/2 + 1 
 	cov(fft_buf, cov_mat, cov_mat_means, vec_len, vec_num);
+
+/*	ssyevx_("Vectors", "Indices", "Upper", (integer*) &n, (real*) cov_mat, (integer*) &lda, (real*) 0, (real*) 0,
+		(integer*) &upper_limit, (integer*) &lower_limit, (real*) &absol, (integer*) &eig_val_found, (real*) &eig_val,
+		(real*) princ_comp, (integer*) &ldz, (real*) work, (integer*) &lwork, (integer*) iwork, (integer*) &ifail,
+		(integer*) &info);
+*/
 }
 
 
-void fft_obs_matrix(float* input, float* output, uint32_t vec_len, uint32_t vec_num,struct fft_args* args)
+void fft_obs_matrix(float32_t* input, float32_t* output, uint32_t vec_len, uint32_t vec_num,struct fft_args* args)
 {
     for (int i = 0; i < vec_num; i++)
     {
@@ -37,9 +40,9 @@ void fft_obs_matrix(float* input, float* output, uint32_t vec_len, uint32_t vec_
         fft_abs((input + i*vec_len), (output + i*(vec_len/2 + 1)), args);
     }
 }
+//yes to funct from libs
 
-
-void cov(float* A, float* cov_mat, float* means, uint32_t vec_len, uint32_t vec_num)
+void cov(float32_t* A, float32_t* cov_mat, float32_t* means, uint32_t vec_len, uint32_t vec_num)
 {
 
     for (int i = 0; i < vec_len; i++) {
@@ -56,39 +59,9 @@ void cov(float* A, float* cov_mat, float* means, uint32_t vec_len, uint32_t vec_
         }
     }
 }
-/*
-  @brief         Floating-point matrix initialization.
-  @param[in,out] S         points to an instance of the floating-point matrix structure
-  @param[in]     nRows     number of rows in the matrix
-  @param[in]     nColumns  number of columns in the matrix
-  @param[in]     pData     points to the matrix data array
-  @return        none
-*/
-
-typedef struct {
-       uint16_t numRows;     // number of rows of the matrix.
-       uint16_t numCols;     // number of columns of the matrix.
-       float32_t *pData;     // points to the data of the matrix.
-     } arm_matrix_instance_f32;
-
-void arm_mat_init_f32(
-  arm_matrix_instance_f32 * S,
-  uint16_t nRows,
-  uint16_t nColumns,
-  float32_t * pData)
-{
-  /* Assign Number of Rows */
-  S->numRows = nRows;
-
-  /* Assign Number of Columns */
-  S->numCols = nColumns;
-
-  /* Assign Data pointer */
-  S->pData = pData;
-}
 
 
-}
+
 /*
 //not specified for code, rework this section out
 struct fft_pca_args* alloc_fft_pca_args(uint32_t vec_len, uint32_t vec_num)

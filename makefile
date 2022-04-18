@@ -18,11 +18,10 @@ Lib = \
       libCMSISDSPTransform.a
 
 OBJS = \
-	main.o \
 	startup_ARMCM7.o \
 	system_ARMCM7.o \
 	mainArm.o \
-	timeOptimization.o
+	eig_vec_decomp_micro.o
 
 OBJ = $(patsubst %,$(ODIR)/%,$(OBJS))
 

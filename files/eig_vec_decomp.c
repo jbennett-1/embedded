@@ -167,7 +167,7 @@ int main() {
     args->targ_mat = mat2;
 
     eig_decomp(args);
-i
+
     /* should be close to {-0.2137, -0.3353, -0.0551, -0.6872, 0.3163, -0.3101, 0.1152, 0.3964} */
     print_matrix(args->eig_vec, dim_size, 1);
 

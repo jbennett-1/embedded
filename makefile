@@ -6,7 +6,7 @@ SIZE := arm-none-eabi-size
 
 CFLAGS := -O0 -ffreestanding -fno-pie -fno-stack-protector -g3 -march=armv7-m -mthumb -Wall -mgeneral-regs-only 
 CFLAGS += -I/home/juliabennett/Desktop/embedded/Include
-CLFAGS += -I/home/juliabennett/Desktop/embedded/Include/dsp
+#CLFAGS += -I/home/juliabennett/Desktop/embedded/Include/dsp
 
 ODIR := obj
 SDIR := src
@@ -20,11 +20,10 @@ Lib = \
 OBJS = \
 	startup_ARMCM7.o \
 	system_ARMCM7.o \
-	mainArm.o \
+	timeOptimization.o \
 	eig_vec_decomp_micro.o
 
 OBJ = $(patsubst %,$(ODIR)/%,$(OBJS))
-
 
 $(ODIR)/%.o: $(SDIR)/%.c
 	$(CC) $(CFLAGS) -c -g -o $@ $^

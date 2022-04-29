@@ -1,5 +1,6 @@
-//#include <math.h>
+#include <math.h>
 #include "arm_math.h"
+#define ARMCM7
 
 struct eig_decomp_args {
     float32_t*   s;         // mem needed to calc error

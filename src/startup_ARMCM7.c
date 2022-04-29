@@ -22,16 +22,14 @@
  * limitations under the License.
  */
 
-//#if defined (ARMCM7)
-//#include "ARMCM7.h"
-//#elif defined (ARMCM7_SP)
- // #include "ARMCM7_SP.h"
-//#elif defined (ARMCM7_DP)
- #include "ARMCM7_DP.h"
-//#else
- // #error device not specified!
-//#endif
+#if defined (ARMCM7)
+  #include "ARMCM7.h"
+#elif defined (ARMCM7_DP)
+  #include "ARMCM7_DP.h"
+#endif
 
+#include "arm_math.h"
+#include "system_ARMCM7.h"
 /*----------------------------------------------------------------------------
   External References
  *----------------------------------------------------------------------------*/

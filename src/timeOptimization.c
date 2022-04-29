@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "arm_math.h"
+#define ARMCM7
 
 struct fft_pca_args{
 	struct eig_decomp_args *eig_args;

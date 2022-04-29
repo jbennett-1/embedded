@@ -4,9 +4,8 @@ OBJCOPY := arm-none-eabi-objcopy
 OBJDUMP := arm-none-eabi-objdump
 SIZE := arm-none-eabi-size
 
-CFLAGS := -O0 -ffreestanding -fno-pie -fno-stack-protector -g3 -march=armv7-m -mthumb -Wall -mgeneral-regs-only 
+CFLAGS := -O0 -ffreestanding -fno-pie -fno-stack-protector -g3 -march=armv7e-m -mthumb -Wall -mfloat-abi=hard -mfpu=fpv4-sp-d16
 CFLAGS += -I/home/juliabennett/Desktop/embedded/Include
-#CLFAGS += -I/home/juliabennett/Desktop/embedded/Include/dsp
 
 ODIR := obj
 SDIR := src
@@ -37,7 +36,8 @@ $(ODIR)/%.o: $(SDIR)/%.S
 all: emb
 
 emb: $(OBJ)
-	$(LD) obj/* -Tgcc_arm.ld -o embedded.img
+#	$(LD) obj/* -Tgcc_arm.ld -o embedded.img -lm
+	$(CC) obj/* -Tgcc_arm.ld -o embedded.img -lm -nostartfiles -e _start
 	cp embedded.img embedded.elf
 	$(OBJCOPY) -O binary embedded.img
 	$(SIZE) embedded.elf

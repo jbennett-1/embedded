@@ -6,21 +6,24 @@ SIZE := arm-none-eabi-size
 
 CFLAGS := -O0 -ffreestanding -fno-pie -fno-stack-protector -g3 -march=armv7e-m -mthumb -Wall -mfloat-abi=hard -mfpu=fpv4-sp-d16 -lm
 CFLAGS += -I/home/juliabennett/Desktop/embedded/Include
+LDFLAGS := -L/home/juliabennett/Desktop/embedded/lib 
 
 ODIR := obj
 SDIR := src
-Lib := lib
-
-Lib = \
-      libCMSISDSPBasicMath.a \
-      libCMSISDSPMatrix.a \
-      libCMSISDSPTransform.a
 
 OBJS = \
 	startup_ARMCM7.o \
 	system_ARMCM7.o \
+	mainArm.o	\
 	timeOptimization.o \
 	eig_vec_decomp_micro.o
+
+LIBS = \
+	libCMSISDSPTransform.a \
+	libCMSISDSPBasicMath.a \
+	libCMSISDSPMatrix.a \
+	libCMSISDSPCommon.a
+
 
 OBJ = $(patsubst %,$(ODIR)/%,$(OBJS))
 
@@ -33,11 +36,13 @@ $(ODIR)/%.o: $(SDIR)/%.s
 $(ODIR)/%.o: $(SDIR)/%.S
 	$(CC) $(CFLAGS) -c -g -o $@ $^
 
+$(ODIR)/%.o: $(LDIR)/%.a
+	$(LD) $(LDFLAGS) -L/home/juliabennett/Desktop/embedded/lib
+
 all: emb
 
-emb: $(OBJ)
-#	$(LD) obj/* -Tgcc_arm.ld -o embedded.img -lm
-	$(LD) obj/* -Tgcc_arm.ld -o embedded.img -nostartfiles -e _start
+emb: $(OBJ) 
+	$(LD) $(LDFLAGS) obj/* $(LIBS) -Tgcc_arm.ld -o embedded.img
 	cp embedded.img embedded.elf
 	$(OBJCOPY) -O binary embedded.img
 	$(SIZE) embedded.elf

@@ -1,5 +1,8 @@
 #include <stdint.h>
 #include "arm_math.h"
+#include "arm_common_tables.h"
+
+
 #define ARMCM7
 
 struct fft_pca_args{
@@ -89,6 +92,7 @@ void cov(struct fft_pca_args* args)
             }
         }
     }
+}
 void fft_pca(struct fft_pca_args* args)
 {
    uint16_t vec_len = args->vec_len;
@@ -102,5 +106,8 @@ void fft_pca(struct fft_pca_args* args)
    eig_decomp(args->eig_args);
 }
 
+int main(){
+   while(1){
+   }
 }
 

@@ -1,5 +1,6 @@
 #include <math.h>
 #include "arm_math.h"
+#include "arm_common_tables.h"
 #define ARMCM7
 
 struct eig_decomp_args {

@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <math.h>
 #include "arm_math.h"
 #define ARMCM7
 
@@ -103,7 +104,7 @@ void fft_pca(struct fft_pca_args* args)
    eig_decomp(args);
 }
 
-int main(){
+int32_t main(){
    while(1);
 }
 

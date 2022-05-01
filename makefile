@@ -4,22 +4,21 @@ OBJCOPY := arm-none-eabi-objcopy
 OBJDUMP := arm-none-eabi-objdump
 SIZE := arm-none-eabi-size
 
-CFLAGS := -O0 -ffreestanding -fno-pie -fno-stack-protector -g3 -march=armv7e-m -mthumb -Wall -mfloat-abi=hard -mfpu=fpv4-sp-d16 -lm
-CFLAGS += -I/home/juliabennett/Desktop/embedded/Include -nostartfiles
-#LDFLAGS := -L/home/juliabennett/Desktop/embedded/lib 
-#LDLIBS := -l$(LIBS)
+CFLAGS := -O0 -ffreestanding -fno-pie -fno-stack-protector -g3 -march=armv7e-m -mthumb -Wall -lm -mfloat-abi=hard -mfpu=fpv4-sp-d16
+CFLAGS += -I/home/juliabennett/Desktop/embedded/Include -nostartfiles -lm
+LDFLAGS := -L/home/juliabennett/Desktop/embedded/lib 
+LDLIBS := -l$(LIBS) -lm
 
 ODIR := obj
 SDIR := src
-#SLIB := lib
+SLIB := lib
 
 OBJS = \
 	startup_ARMCM7.o \
 	system_ARMCM7.o \
 	mainArm.o	\
-	newFile.o	\
-#	timeOptimization.o \
-#	eig_vec_decomp_micro.o \
+	eig_vec_decomp_micro.o \
+	timeOptimization.o \
 
 LIBS = \
 	libCMSISDSPTransform.a \
@@ -28,12 +27,11 @@ LIBS = \
 	libCMSISDSPCommon.a
 
 
-#LIB = $(patsubst %,$(SLIB)/%,$(LIBS))
+LIB = $(patsubst %,$(SLIB)/%,$(LIBS))
 OBJ = $(patsubst %,$(ODIR)/%,$(OBJS))
 
-#$(ODIR)/%.o: $(SLIB)/%.a
-#	$(LD) $^ $(LDLIBS) -o $@
-#	$(LD) $^ $(LDLIBS) ar Ts -o $@ 
+$(ODIR)/%.o: $(SLIB)/%.a
+	$(LD) $^ $(LDLIBS) ar Ts -o $@ 
 
 $(ODIR)/%.o: $(SDIR)/%.c
 	$(CC) $(CFLAGS) -c -g -o $@ $^
@@ -47,7 +45,7 @@ $(ODIR)/%.o: $(SDIR)/%.S
 all: emb
 
 emb: $(OBJ) 
-	$(LD) obj/* -Tgcc_arm.ld -Tlnk.ld -o embedded.img
+	$(LD) obj/* -Tlnk.ld -Tgcc_arm.ld $(LIB) -o embedded.img
 	cp embedded.img embedded.elf
 	$(OBJCOPY) -O binary embedded.img
 	$(SIZE) embedded.elf

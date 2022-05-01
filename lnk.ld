@@ -22,8 +22,6 @@
  * limitations under the License.
  */
 
-__STACK_SIZE = 0x2000;
-__HEAP_SIZE  = 0x50000;
 
 MEMORY
 {

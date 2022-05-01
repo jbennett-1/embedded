@@ -1,5 +1,5 @@
-#include <math.h>
 #include "arm_math.h"
+#include <math.h>
 #define ARMCM7
 
 struct eig_decomp_args {
@@ -61,3 +61,6 @@ void eig_decomp(struct eig_decomp_args* args)
     args->eig_vec = eig_vec;
 }
 
+int32_t main(){
+	while(1);
+}

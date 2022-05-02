@@ -5,9 +5,9 @@ OBJDUMP := arm-none-eabi-objdump
 SIZE := arm-none-eabi-size
 
 CFLAGS := -O0 -ffreestanding -fno-pie -fno-stack-protector -g3 -march=armv7e-m -mthumb -Wall -lm -mfloat-abi=hard -mfpu=fpv4-sp-d16
-CFLAGS += -I/home/juliabennett/Desktop/embedded/Include -nostartfiles -lm
-LDFLAGS := -L/home/juliabennett/Desktop/embedded/lib 
-LDLIBS := -l$(LIBS) -lm
+CFLAGS += -I/home/juliabennett/Desktop/embedded/Include -nostartfiles 
+LDFLAGS := -L/home/juliabennett/Desktop/embedded/lib -L/usr/lib/arm-none-eabi/newlib/thumb/v7e-m+dp/hard
+LDLIBS := -l$(LIBS) 
 
 ODIR := obj
 SDIR := src
@@ -24,8 +24,7 @@ LIBS = \
 	libCMSISDSPTransform.a \
 	libCMSISDSPBasicMath.a \
 	libCMSISDSPMatrix.a \
-	libCMSISDSPCommon.a
-
+	libCMSISDSPCommon.a \
 
 LIB = $(patsubst %,$(SLIB)/%,$(LIBS))
 OBJ = $(patsubst %,$(ODIR)/%,$(OBJS))
@@ -45,7 +44,7 @@ $(ODIR)/%.o: $(SDIR)/%.S
 all: emb
 
 emb: $(OBJ) 
-	$(LD) obj/* -Tlnk.ld -Tgcc_arm.ld $(LIB) -o embedded.img
+	$(LD) obj/* -Tgcc_arm.ld $(LIB) --specs=nano.specs -o embedded.img
 	cp embedded.img embedded.elf
 	$(OBJCOPY) -O binary embedded.img
 	$(SIZE) embedded.elf

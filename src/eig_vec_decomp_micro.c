@@ -61,6 +61,3 @@ void eig_decomp(struct eig_decomp_args* args)
     args->eig_vec = eig_vec;
 }
 
-int32_t main(){
-	while(1);
-}

@@ -11,13 +11,30 @@ struct eig_decomp_args {
     float32_t    err_tol;  // error tolerated in the eigenvector
 };
 
+float Q_rsqrt( float number )
+{
+	long i;
+	float x2, y;
+	const float threehalfs = 1.5F;
+
+	x2 = number * 0.5F;
+	y  = number;
+	i  = * ( long * ) &y;                       // evil floating point bit level hacking
+	i  = 0x5f3759df - ( i >> 1 );               // what the fuck? 
+	y  = * ( float * ) &i;
+	y  = y * ( threehalfs - ( x2 * y * y ) );   // 1st iteration
+//	y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
+
+	return y;
+}
+
 void normalize(float32_t* vec, uint32_t vec_len)
 {   
     float32_t norm = 0;
     
     arm_dot_prod_f32(vec, vec, vec_len, &norm);
     
-    norm = sqrtf(norm);
+    norm = Q_rsqrt(norm);
     
     arm_scale_f32(vec, 1/norm, vec, vec_len);
 }
@@ -28,8 +45,9 @@ float32_t l1_error(float32_t* new_vec, float32_t * old_vec, uint32_t vec_len)
     
     for (int i = 0; i < vec_len; i++)
     {   
-        error += fabsf(new_vec[i] - old_vec[i]);
-    }
+	float32_t diff = new_vec[i] - old_vec[i];
+	error += (diff < 0) ? (diff*-1) : (diff); 
+	}
     
     return error;
 }

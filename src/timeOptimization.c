@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <math.h>
+#include "eig_vec_decomp.h"
 #include "arm_math.h"
 #define ARMCM7
 
@@ -100,11 +100,12 @@ void fft_pca(struct fft_pca_args* args)
    vec_len = (vec_len/2 + 1); // since data is real, vectors after fft are length n/2 + 1
 
    cov(args);
-
-   eig_decomp(args);
+   eig_decomp(args->eig_args);
 }
 
 int32_t main(){
    while(1);
+   struct fft_pca_args* args;
+   fft_pca(args);
 }
 

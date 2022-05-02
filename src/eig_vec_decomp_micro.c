@@ -1,15 +1,6 @@
 #include "arm_math.h"
-#include <math.h>
+#include "eig_vec_decomp.h"
 #define ARMCM7
-
-struct eig_decomp_args {
-    float32_t*   s;         // mem needed to calc error
-    arm_matrix_instance_f32 * targ_mat;
-    uint32_t dim_size;
-    float32_t*   eig_vec;  
-    uint32_t execs;    // maxmimum loop executions before giving up on convergence
-    float32_t    err_tol;  // error tolerated in the eigenvector
-};
 
 float Q_rsqrt( float number )
 {

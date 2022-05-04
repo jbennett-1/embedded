@@ -21,12 +21,6 @@ struct fft_pca_args{
 	uint8_t bits;
 };
 
-//dynamic mem management//calloc() but write your own version//alloc at compile time//constants in ld for mem 
-//need 4 buffers, data, cov, eigen vector buffer + store the product in output buffer
-/* matrix is stored as an array, contigious memory in stack, need pointer array (for the buffers of elements x1-x2)
-//using headerfiles definitions of arm_matrix instance etc etc
-*/
-
 void initialize(struct fft_pca_args* args, struct eig_decomp_args *eig_args, float32_t* cov_buffer, float32_t* eig_buffer, float32_t* output_buffer, arm_rfft_fast_instance_f32* fft_buffer, uint8_t ifftFlag, uint8_t bits, uint16_t vec_len, uint16_t vec_num, float32_t* data, float32_t* cov_mat_means)
 {
 
@@ -45,8 +39,6 @@ void initialize(struct fft_pca_args* args, struct eig_decomp_args *eig_args, flo
    
    arm_rfft_fast_init_f32(&args->fft_buffer, vec_len);
    
-   //change the vec leng only when its out of the fft, keep the length when its going into the matrix
-
    arm_mat_init_f32(args->input_buffer, vec_len, vec_num, data);
 }
 

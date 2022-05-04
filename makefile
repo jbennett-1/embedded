@@ -53,12 +53,12 @@ clean:
 	rm -f embedded.elf
 
 debug:  
-	screen -S openocd -d -m openocd -f ~/Desktop/openocd/tcl/board/microchip_same54_xplained_pro.cfg
+	screen -S openocd -d -m openocd -f /home/juliabennett/Desktop/openocd/tcl/target/atsame5x.cfg
 	gdb-multiarch embedded.elf 
 	TERM=xterm gdb-multiarch -x gdb_init_prot_mode.txt
 
 run:
-	screen -S openocd -d -m openocd -f ~/Desktop/openocd/tcl/board/microchip_same54_xplained_pro.cfg -kernel embedded.elf -serial null -monitor stdio
+	screen -S openocd -d -m openocd -f /home/juliabennett/Desktop/openocd/tcl/target/atsame5x.cfg -kernel embedded.elf -serial null -monitor stdio
 
 disassemble:
 	$(OBJDUMP) -d embedded.elf

@@ -4,4 +4,4 @@ file embedded.elf
 break _start
 layout src
 layout reg
-
+layout asm

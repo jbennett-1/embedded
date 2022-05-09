@@ -5,7 +5,7 @@ OBJDUMP := arm-none-eabi-objdump
 SIZE := arm-none-eabi-size
 
 CFLAGS := -O0 -ffreestanding -fno-pie -fno-stack-protector -g3 -march=armv7e-m -mthumb -Wall -mfloat-abi=hard -mfpu=fpv4-sp-d16
-CFLAGS += -I/home/juliabennett/Desktop/embedded/Include
+CFLAGS += -I/home/juliabennett/Desktop/embedded/Include -nostartfiles
 LDFLAGS := -L/home/juliabennett/Desktop/embedded/lib 
 
 ODIR := obj
@@ -53,12 +53,11 @@ clean:
 	rm -f embedded.elf
 
 debug:  
-	screen -S openocd -d -m openocd -f /home/juliabennett/Desktop/openocd/tcl/target/atsame5x.cfg
-	gdb-multiarch embedded.elf 
-	TERM=xterm gdb-multiarch -x gdb_init_prot_mode.txt
+	screen -S openocd -d -m openocd -f /home/juliabennett/Desktop/openocd/openocd-code/tcl/board/microchip_same54_xplained_pro.cfg
+	TERM=xterm gdb-multiarch -x gdb_init_prot_mode.txt embedded.elf
 
 run:
-	screen -S openocd -d -m openocd -f /home/juliabennett/Desktop/openocd/tcl/target/atsame5x.cfg -kernel embedded.elf -serial null -monitor stdio
+	screen -S openocd -d -m openocd -f /home/juliabennett/Desktop/openocd/openocd-code/tcl/board/microchip_same54_xplained_pro.cfg -kernel embedded.elf -serial null -monitor stdio
 
 disassemble:
 	$(OBJDUMP) -d embedded.elf

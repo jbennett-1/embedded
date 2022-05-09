@@ -1,6 +1,7 @@
 #ifndef EIG_VEC_DECOMP_H
 #define EIG_VEC_DECOMP_H
 #include "arm_math.h"
+#endif
 
 struct eig_decomp_args {
     float*   s;         // mem needed to calc error
@@ -13,4 +14,3 @@ struct eig_decomp_args {
 
 void eig_decomp(struct eig_decomp_args* args);
 
-#endif

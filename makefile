@@ -5,8 +5,8 @@ OBJDUMP := arm-none-eabi-objdump
 SIZE := arm-none-eabi-size
 
 CFLAGS := -O0 -ffreestanding -fno-pie -fno-stack-protector -g3 -march=armv7e-m -mthumb -Wall -mfloat-abi=hard -mfpu=fpv4-sp-d16
-CFLAGS += -I/home/juliabennett/Desktop/embedded/Include -nostartfiles
-LDFLAGS := -L/home/juliabennett/Desktop/embedded/lib 
+CFLAGS += -I/home/juliabennett/Desktop/embedded/Include -nostartfiles -ffunction-sections
+LDFLAGS := -L/home/juliabennett/Desktop/embedded/lib -gc-sections
 
 ODIR := obj
 SDIR := src
@@ -43,7 +43,7 @@ $(ODIR)/%.o: $(SDIR)/%.S
 all: emb
 
 emb: $(OBJ) 
-	$(LD) obj/* -Tgcc_arm.ld $(LIB) -o embedded.img 
+	$(LD) obj/* -Tgcc_arm.ld $(LIB) -gc-sections -o embedded.img 
 	cp embedded.img embedded.elf
 	$(OBJCOPY) -O binary embedded.img
 	$(SIZE) embedded.elf

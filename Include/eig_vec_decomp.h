@@ -11,6 +11,6 @@ struct eig_decomp_args {
     float32_t    err_tol;  // error tolerated in the eigenvector
 };
 
-void eig_decomp(struct eig_decomp_args* args);
+void eig_decomp(arm_matrix_instance_f32* targ_mat, struct eig_decomp_args* args);
 
 #endif

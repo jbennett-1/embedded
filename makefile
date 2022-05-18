@@ -15,9 +15,9 @@ SLIB := lib
 OBJS = \
 	startup_ARMCM7.o \
 	system_ARMCM7.o \
-	mainArm.o	\
 	timeOptimization.o \
-	eig_vec_decomp_micro.o
+	eig_vec_decomp_micro.o \
+	mainArm.o
 
 LIBS = \
 	libCMSISDSPTransform.a \

@@ -1,6 +1,6 @@
 #include "arm_math.h"
 #include "eig_vec_decomp.h"
-#define ARMCM7
+#define ARMCM7_DP
 
 float Q_rsqrt( float number )
 {

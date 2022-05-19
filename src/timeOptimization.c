@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include "eig_vec_decomp.h"
 #include "arm_math.h"
-#define ARMCM7
+#define ARMCM7_DP
 #define VEC_NUM 2
 #define VEC_LEN 16
 //ffix system file incase bad vec table, fix hard fault errors

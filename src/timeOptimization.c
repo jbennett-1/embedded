@@ -4,7 +4,6 @@
 #define ARMCM7_DP
 #define VEC_NUM 2
 #define VEC_LEN 16
-//ffix system file incase bad vec table, fix hard fault errors
 
 float32_t input_data[VEC_LEN*VEC_NUM];
 float32_t output_buffer[VEC_LEN*VEC_NUM];

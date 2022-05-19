@@ -116,7 +116,7 @@ void main(){
    uint16_t vec_num = VEC_NUM;
    uint16_t fft_len = VEC_LEN;
    
-   uint8_t ifftFlag = 1;
+   uint8_t ifftFlag = 0;
    uint8_t bits = 4;
 
    initialize(&eig_input, &args, output_buffer, &matrix_buffer, input_data, vec_len, vec_num, &fft_buffer, fft_len, fft_out, ifftFlag, cov_buffer, cov_mat_means, eig_buffer, bits);

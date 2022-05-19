@@ -21,9 +21,9 @@ OBJS = \
 
 LIBS = \
 	libCMSISDSPTransform.a \
-	libCMSISDSPBasicMath.a \
-	libCMSISDSPMatrix.a \
 	libCMSISDSPCommon.a \
+	libCMSISDSPMatrix.a \
+	libCMSISDSPBasicMath.a \
 
 LIB = $(patsubst %,$(SLIB)/%,$(LIBS))
 OBJ = $(patsubst %,$(ODIR)/%,$(OBJS))

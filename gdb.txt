@@ -1,0 +1,157 @@
+r0             0x2001fe18          537001496
+r1             0xebbb31dc          -340053540
+r2             0x20000170          536871280
+r3             0x1                 1
+r4             0xebbb31dc          -340053540
+r5             0x2001ff6c          537001836
+r6             0x20000170          536871280
+r7             0x2001fd94          537001364
+r8             0xeec5e29           250371625
+r9             0x1                 1
+r10            0xfff3f9bc          -788036
+Quit
+Signal        Stop	Print	Pass to program	Description
+
+SIGHUP        Yes	Yes	Yes		Hangup
+SIGINT        Yes	Yes	No		Interrupt
+SIGQUIT       Yes	Yes	Yes		Quit
+SIGILL        Yes	Yes	Yes		Illegal instruction
+SIGTRAP       Yes	Yes	No		Trace/breakpoint trap
+SIGABRT       Yes	Yes	Yes		Aborted
+SIGEMT        Yes	Yes	Yes		Emulation trap
+SIGFPE        Yes	Yes	Yes		Arithmetic exception
+SIGKILL       Yes	Yes	Yes		Killed
+Quit
+Undefined info command: "catch".  Try "help info".
+No symbol "iffFlag" in current context.
+Undefined command: "pifftFlag".  Try "help".
+$1 = 1 '\001'
+Too few arguments in function call.
+same54.cpu -- clearing lockup after double fault
+
+Program received signal SIGINT, Interrupt.
+merge_rfft_f32 (S=0x2001fe18, p=0xebbb31dc, pOut=0x20000170 <fft_out>)
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:403
+The program being debugged was signaled while in a function called from GDB.
+GDB remains in the frame where the signal was received.
+To change this behavior use "set unwindonsignal on".
+Evaluation of the expression containing the function
+(merge_rfft_f32) will be abandoned.
+When the function is done executing, GDB will silently stop.
+#1  <function called from gdb>
+Continuing.
+same54.cpu -- clearing lockup after double fault
+
+Program received signal SIGINT, Interrupt.
+merge_rfft_f32 (S=0x2001fe18, p=0xebbb31dc, pOut=0x20000170 <fft_out>)
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:403
+same54.cpu -- clearing lockup after double fault
+
+Program received signal SIGINT, Interrupt.
+merge_rfft_f32 (S=0x2001fe18, p=0xebbb31dc, pOut=0x20000170 <fft_out>)
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:403
+The program being debugged was signaled while in a function called from GDB.
+GDB has restored the context to what it was before the call.
+To change this behavior use "set unwindonsignal off".
+Evaluation of the expression containing the function
+(merge_rfft_f32) will be abandoned.
+#1  <function called from gdb>
+#2  arm_rfft_fast_f32 (S=0x2001fe18, p=0xebbb31dc, pOut=0x20000170 <fft_out>, ifftFlag=1 '\001')
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:587
+$2 = {void (const arm_rfft_fast_instance_f32 *, float32_t *, float32_t *, uint8_t)} 0xbc4 <arm_rfft_fast_f32>
+#2  arm_rfft_fast_f32 (S=0x2001fe18, p=0xebbb31dc, pOut=0x20000170 <fft_out>, ifftFlag=1 '\001')
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:587
+
+Program received signal SIGINT, Interrupt.
+merge_rfft_f32 (S=0x2001fe18, p=0xebbb31dc, pOut=0x20000170 <fft_out>)
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:403
+Line 403 of "/home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c"
+   starts at address 0xb28 <merge_rfft_f32> and ends at 0xb30 <merge_rfft_f32+8>.
+Run till exit from #0  merge_rfft_f32 (S=0x2001fe18, p=0xebbb31dc, pOut=0x20000170 <fft_out>)
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:403
+same54.cpu -- clearing lockup after double fault
+
+Program received signal SIGINT, Interrupt.
+merge_rfft_f32 (S=0x2001fe18, p=0xebbb31dc, pOut=0x20000170 <fft_out>)
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:403
+Stack level 0, frame at 0x2001fd78:
+ pc = 0xb28 in merge_rfft_f32 (/home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:403); 
+    saved pc = 0x624
+ called by frame at 0x2001fd78
+ source language c.
+ Arglist at 0x2001fd78, args: S=0x2001fe18, p=0xebbb31dc, pOut=0x20000170 <fft_out>
+ Locals at 0x2001fd78, Previous frame's sp is 0x2001fd78
+Run till exit from #0  merge_rfft_f32 (S=0x2001fe18, p=0xebbb31dc, pOut=0x20000170 <fft_out>)
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:403
+same54.cpu -- clearing lockup after double fault
+
+Program received signal SIGINT, Interrupt.
+merge_rfft_f32 (S=0x2001fe18, p=0xebbb31dc, pOut=0x20000170 <fft_out>)
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:403
+Continuing.
+same54.cpu -- clearing lockup after double fault
+
+Program received signal SIGINT, Interrupt.
+merge_rfft_f32 (S=0x2001fe18, p=0xebbb31dc, pOut=0x20000170 <fft_out>)
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:403
+
+Program received signal SIGINT, Interrupt.
+merge_rfft_f32 (S=0x2001fe18, p=0xebbb31dc, pOut=0x20000170 <fft_out>)
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:403
+
+Program received signal SIGINT, Interrupt.
+merge_rfft_f32 (S=0x2001fe18, p=0xebbb31dc, pOut=0x20000170 <fft_out>)
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:403
+Loading section .text, size 0x1d10 lma 0x0
+Loading section .copy.table, size 0xc lma 0x1d10
+Loading section .data, size 0x4 lma 0x1d1c
+Start address 0x00000624, load size 7456
+Transfer rate: 7 KB/sec, 2485 bytes/write.
+Breakpoint 2 at 0xb28: file /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c, line 403.
+Function "b" not defined.
+Reset_Handler () at src/startup_ARMCM7.c:123
+__cmsis_start () at /home/juliabennett/Desktop/embedded/Include/cmsis_gcc.h:151
+
+Breakpoint 1, _start () at src/mainArm.s:4
+main () at src/timeOptimization.c:115
+
+Breakpoint 2, merge_rfft_f32 (S=S@entry=0x2001fe18, p=0xebbb31dc, pOut=pOut@entry=0x20000170 <fft_out>)
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:403
+Attempt to take contents of a non-pointer value.
+Attempt to take contents of a non-pointer value.
+Invalid cast.
+#0  arm_rfft_fast_f32 (S=0x2001fe18, p=<optimized out>, pOut=0x20000170 <fft_out>, ifftFlag=<optimized out>)
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:589
+arm_cfft_f32 (S=0x2001fe18, p1=0x20000170 <fft_out>, ifftFlag=1 '\001', bitReverseFlag=1 '\001')
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_cfft_f32.c:1138
+
+Program received signal SIGINT, Interrupt.
+arm_cfft_f32 (S=0x2001fe18, p1=0x20000170 <fft_out>, ifftFlag=1 '\001', bitReverseFlag=1 '\001')
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_cfft_f32.c:1147
+
+Program received signal SIGINT, Interrupt.
+arm_cfft_f32 (S=0x2001fe18, p1=0x20000170 <fft_out>, ifftFlag=1 '\001', bitReverseFlag=1 '\001')
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_cfft_f32.c:1147
+
+Program received signal SIGINT, Interrupt.
+arm_cfft_f32 (S=0x2001fe18, p1=0x20000170 <fft_out>, ifftFlag=1 '\001', bitReverseFlag=1 '\001')
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_cfft_f32.c:1147
+#0  fft_obs_matrix (input_buffer=0xdbfdd5cf, vec_len=16, vec_num=2, args=0x2001fe50) at src/timeOptimization.c:63
+
+Breakpoint 2, merge_rfft_f32 (S=S@entry=0x2001fe18, p=0xebbb321c, pOut=pOut@entry=0x20000178 <fft_out+8>)
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:403
+#0  arm_rfft_fast_f32 (S=0x2001fe18, p=<optimized out>, pOut=0x20000178 <fft_out+8>, ifftFlag=<optimized out>)
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_rfft_fast_f32.c:589
+arm_cfft_f32 (S=0x2001fe18, p1=0x20000178 <fft_out+8>, ifftFlag=1 '\001', bitReverseFlag=1 '\001')
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_cfft_f32.c:1138
+Undefined command: "sl".  Try "help".
+
+Program received signal SIGINT, Interrupt.
+arm_cfft_f32 (S=0x2001fe18, p1=0x20000178 <fft_out+8>, ifftFlag=1 '\001', bitReverseFlag=1 '\001')
+    at /home/juliabennett/Desktop/CMSIS_5/CMSIS/DSP/Source/TransformFunctions/arm_cfft_f32.c:1147
+Loading section .text, size 0x1d10 lma 0x0
+Loading section .copy.table, size 0xc lma 0x1d10
+Loading section .data, size 0x4 lma 0x1d1c
+Start address 0x00000624, load size 7456
+Transfer rate: 7 KB/sec, 2485 bytes/write.
+Continuing.

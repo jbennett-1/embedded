@@ -4,7 +4,7 @@
 
 struct eig_decomp_args {
     float*   s;         // mem needed to calc error
-    arm_matrix_instance_f32 * targ_mat;
+    arm_matrix_instance_f32* targ_mat;
     uint32_t dim_size;
     float32_t*   eig_vec;
     uint32_t execs;    // maxmimum loop executions before giving up on convergence

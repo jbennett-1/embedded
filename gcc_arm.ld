@@ -33,7 +33,7 @@
   </h>
   -----------------------------------------------------------------------------*/
 __ROM_BASE = 0x00000000;
-__ROM_SIZE = 0x00080000;
+__ROM_SIZE = 0x00040000;
 
 /*--------------------- Embedded RAM Configuration ----------------------------
   <h> RAM Configuration
@@ -50,7 +50,7 @@ __RAM_SIZE = 0x00020000;
     <o1> Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
   </h>
   -----------------------------------------------------------------------------*/
-__STACK_SIZE = 0x00002000;
+__STACK_SIZE = 0x00000400;
 __HEAP_SIZE  = 0x00000C00;
 
 /*
@@ -127,7 +127,7 @@ SECTIONS
   /*
    * SG veneers:
    * All SG veneers are placed in the special output section .gnu.sgstubs. Its start address
-   * must be set, either with the command line option --section-start or in a linker script,
+   * must be set, either with the command line option �--section-start� or in a linker script,
    * to indicate where to place these veneers in memory.
    */
 /*
@@ -156,7 +156,9 @@ SECTIONS
     LONG (__etext)
     LONG (__data_start__)
     LONG ((__data_end__ - __data_start__) / 4)
-    /*
+
+    /* Add each additional data section here */
+/*
     LONG (__etext2)
     LONG (__data2_start__)
     LONG ((__data2_end__ - __data2_start__) / 4)

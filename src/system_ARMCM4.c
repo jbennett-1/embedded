@@ -1,7 +1,7 @@
 /**************************************************************************//**
- * @file     system_ARMCM7.c
+ * @file     system_ARMCM4.c
  * @brief    CMSIS Device System Source File for
- *           ARMCM7 Device
+ *           ARMCM4 Device
  * @version  V1.0.1
  * @date     15. November 2019
  ******************************************************************************/
@@ -23,17 +23,14 @@
  * limitations under the License.
  */
 
-#if defined (ARMCM7)
-  #include "ARMCM7.h"
-#elif defined (ARMCM7_SP)
-  #include "ARMCM7_SP.h"
-#elif defined (ARMCM7_DP)
-  #include "ARMCM7_DP.h"
+#if defined (ARMCM4)
+  #include "ARMCM4.h"
+#elif defined (ARMCM4_FP)
+  #include "ARMCM4_FP.h"
 #endif
 
 #include "arm_math.h"
-#include "system_ARMCM7.h"
-
+#include "system.h"
 /*----------------------------------------------------------------------------
   Define clocks
  *----------------------------------------------------------------------------*/

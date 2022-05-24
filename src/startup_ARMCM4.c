@@ -1,6 +1,6 @@
 /******************************************************************************
- * @file     startup_ARMCM7.c
- * @brief    CMSIS-Core(M) Device Startup File for a Cortex-M7 Device
+ * @file     startup_ARMCM4.c
+ * @brief    CMSIS-Core(M) Device Startup File for a Cortex-M4 Device
  * @version  V2.0.3
  * @date     31. March 2020
  ******************************************************************************/
@@ -22,14 +22,15 @@
  * limitations under the License.
  */
 
-#if defined (ARMCM7)
-  #include "ARMCM7.h"
-#elif defined (ARMCM7_DP)
-  #include "ARMCM7_DP.h"
+#if defined (ARMCM4)
+  #include "ARMCM4.h"
+#elif defined (ARMCM4_FP)
+  #include "ARMCM4_FP.h"
 #endif
 
 #include "arm_math.h"
-#include "system_ARMCM7.h"
+#include "system.h"
+
 /*----------------------------------------------------------------------------
   External References
  *----------------------------------------------------------------------------*/
@@ -122,7 +123,6 @@ __NO_RETURN void Reset_Handler(void)
 {
   SystemInit();                             /* CMSIS System Initialization */
   __PROGRAM_START();                        /* Enter PreMain (C library entry point) */
-
 }
 
 

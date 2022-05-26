@@ -94,6 +94,16 @@ extern "C"
   #define ARM_MATH_DSP                   1
 #endif
 
+#ifndef UNALIGNED_SUPPORT_DISABLE
+    #define ALIGN4
+#else
+  #if defined  (__GNUC__)
+    #define ALIGN4 __attribute__((aligned(4)))
+  #else
+    #define ALIGN4 __align(4)
+  #endif
+#endif
+
 #if defined(ARM_MATH_NEON)
 #include <arm_neon.h>
 #if defined(__ARM_FEATURE_FP16_VECTOR_ARITHMETIC) && __ARM_FEATURE_FP16_VECTOR_ARITHMETIC

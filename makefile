@@ -5,7 +5,7 @@ OBJDUMP := arm-none-eabi-objdump
 SIZE := arm-none-eabi-size
 
 CFLAGS := -O0 -ffreestanding -fno-pie -fno-stack-protector -g3 -march=armv7e-m -mthumb -Wall -mfloat-abi=hard -mfpu=fpv4-sp-d16
-CFLAGS += -I/home/juliabennett/Desktop/embedded/Include -nostartfiles -ffunction-sections
+CFLAGS += -I/home/juliabennett/Desktop/embedded/Include -nostartfiles -ffunction-sections -mno-unaligned-access
 LDFLAGS := -L/home/juliabennett/Desktop/embedded/lib -gc-sections
 
 ODIR := obj

@@ -5,8 +5,8 @@ OBJDUMP := arm-none-eabi-objdump
 SIZE := arm-none-eabi-size
 
 CFLAGS := -O0 -ffreestanding -fno-pie -fno-stack-protector -g3 -march=armv7e-m -mthumb -Wall -mfloat-abi=hard -mfpu=fpv4-sp-d16
-CFLAGS += -I/home/juliabennett/Desktop/embedded/Include -nostartfiles -ffunction-sections -mno-unaligned-access
-LDFLAGS := -L/home/juliabennett/Desktop/embedded/lib -gc-sections
+CFLAGS += -I./Include -nostartfiles -ffunction-sections -mno-unaligned-access
+LDFLAGS := -L./lib -gc-sections
 
 ODIR := obj
 SDIR := src
@@ -27,7 +27,6 @@ LIBS = \
 	libCMSISDSPComplexMath.a
 
 LIB = $(patsubst %,$(SLIB)/%,$(LIBS))
-
 OBJ = $(patsubst %,$(ODIR)/%,$(OBJS))
 
 $(ODIR)/%.o: $(SLIB)/%.a
@@ -38,9 +37,6 @@ $(ODIR)/%.o: $(SDIR)/%.c
 
 $(ODIR)/%.o: $(SDIR)/%.s
 	$(CC) $(CFLAGS) -c -g -o $@ $^
-
-#$(ODIR)/%.o: $(SDIR)/%.S
-#	$(CC) $(CFLAGS) -c -g -o $@ $^
 
 all: emb
 

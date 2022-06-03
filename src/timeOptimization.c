@@ -139,10 +139,10 @@ void fft_pca(struct fft_pca_args* args)
 void main(){
     struct fft_pca_args args; 
     struct eig_decomp_args eig_input;
-   
+
     arm_status status;
     status=ARM_MATH_SUCCESS;
-    
+
     ifftFlag=1;
     vec_len=VEC_LEN;
     vec_num=VEC_NUM;

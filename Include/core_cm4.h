@@ -32,6 +32,7 @@
 #define __CORE_CM4_H_GENERIC
 
 #include <stdint.h>
+#include "system.h"
 
 #ifdef __cplusplus
  extern "C" {

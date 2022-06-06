@@ -90,7 +90,7 @@ typedef enum IRQn
 
 /* --------  Configuration of Core Peripherals  ----------------------------------- */
 #define __CM4_REV                 0x0001U   /* Core revision r0p1 */
-#define __MPU_PRESENT             0U        /* MPU present */
+#define __MPU_PRESENT             1U        /* MPU present */
 #define __VTOR_PRESENT            1U        /* VTOR present */
 #define __NVIC_PRIO_BITS          3U        /* Number of Bits used for Priority Levels */
 #define __Vendor_SysTickConfig    1U        /* Set to 1 if different SysTick Config is used */

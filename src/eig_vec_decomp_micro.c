@@ -1,10 +1,9 @@
 #include "arm_math.h"
 #include "system.h"
 #include "eig_vec_decomp.h"
-#include <math.h>
-
 #define ARMCM4_FP
-
+#include <math.h>
+/*
 float Q_rsqrt( float number )
 {
         long i;
@@ -21,9 +20,10 @@ float Q_rsqrt( float number )
         return y;
 
 }
+*/
 
 void normalize(float32_t* vec, uint32_t vec_len)
-{   
+{
     float32_t norm = 0;
     
     for(int i = 0; i < vec_len; i++)

@@ -140,15 +140,15 @@ void main(){
     struct fft_pca_args args; 
     struct eig_decomp_args eig_input;
 
-    arm_status status;
-    status=ARM_MATH_SUCCESS;
+//    arm_status status;
+//    status=ARM_MATH_SUCCESS;
 
     ifftFlag=1;
     vec_len=VEC_LEN;
     vec_num=VEC_NUM;
     fftLen=VEC_LEN;
 
-    status=arm_rfft_fast_init_f32(&fft_data, fftLen);
+    arm_rfft_fast_init_f32(&fft_data, fftLen);
     arm_mat_init_f32(&matrix_buffer, vec_len, vec_num, input_data);
 
     initialize(tmp, &eig_input, &args, &matrix_buffer, input_data, vec_len, vec_num, &fft_data, fftLen, ifftFlag, cov_buffer, cov_mat_means, eig_buffer, &cFFT, pTwiddleRFFT);

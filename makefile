@@ -4,9 +4,9 @@ OBJCOPY := arm-none-eabi-objcopy
 OBJDUMP := arm-none-eabi-objdump
 SIZE := arm-none-eabi-size
 
-CFLAGS := -O0 -ffreestanding -fno-pie -fno-stack-protector -g3 -march=armv7e-m -mthumb -Wall -mfloat-abi=hard -mfpu=fpv4-sp-d16
-CFLAGS += -I./Include -nostartfiles -ffunction-sections -mno-unaligned-access
-LDFLAGS := -L./lib -gc-sections
+CFLAGS := -Ofast -ffreestanding -fno-pie -fno-stack-protector -g3 -march=armv7e-m -mthumb -Wall -mfloat-abi=hard -mfpu=fpv4-sp-d16
+CFLAGS += -I./Include -ffunction-sections -mno-unaligned-access
+LDFLAGS := -L /
 
 ODIR := obj
 SDIR := src
@@ -17,31 +17,33 @@ OBJS = \
 	system_ARMCM4.o \
 	timeOptimization.o \
 	eig_vec_decomp_micro.o \
-	mainArm.o
+	main.o
 
 LIBS = \
 	libCMSISDSPTransform.a \
 	libCMSISDSPCommon.a \
 	libCMSISDSPMatrix.a \
 	libCMSISDSPBasicMath.a \
-	libCMSISDSPComplexMath.a
+	libCMSISDSPComplexMath.a \
+	libCMSISDSPFastMath.a
 
 LIB = $(patsubst %,$(SLIB)/%,$(LIBS))
+
 OBJ = $(patsubst %,$(ODIR)/%,$(OBJS))
 
 $(ODIR)/%.o: $(SLIB)/%.a
-	$(LD) $(LDFLAGS) $(LDLIBS) -o $@ $^
+	$(LD) -o $@ $^ -lm
 
 $(ODIR)/%.o: $(SDIR)/%.c
-	$(CC) $(CFLAGS) -c -g -o $@ $^
+	$(CC) $(CFLAGS) -c -g -o $@ $^ -lm
 
 $(ODIR)/%.o: $(SDIR)/%.s
-	$(CC) $(CFLAGS) -c -g -o $@ $^
+	$(CC) $(CFLAGS) -c -g -o $@ $^ -lm
 
 all: emb
 
 emb: $(OBJ)
-	$(LD) obj/* -Tgcc_arm.ld $(LIB) -gc-sections -o embedded.img
+	$(LD) obj/* -Tgcc_arm.ld $(LIB) -gc-sections -o embedded.img 
 	cp embedded.img embedded.elf
 	$(OBJCOPY) -O binary embedded.img
 	$(SIZE) embedded.elf

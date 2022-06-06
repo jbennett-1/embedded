@@ -1,6 +1,7 @@
 #include "arm_math.h"
 #include "system.h"
 #include "eig_vec_decomp.h"
+#include <math.h>
 
 #define ARMCM4_FP
 
@@ -30,7 +31,7 @@ void normalize(float32_t* vec, uint32_t vec_len)
 	arm_dot_prod_f32(vec, vec, vec_len, &norm);
     }
 
-    norm = Q_rsqrt(norm);
+    norm = sqrt(norm);
 
     for(int i = 0; i < vec_len; i++)
     {    

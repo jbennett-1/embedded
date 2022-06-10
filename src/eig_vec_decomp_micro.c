@@ -55,7 +55,6 @@ float32_t l1_error(float32_t* new_vec, float32_t * old_vec, uint32_t vec_len)
 
 void eig_decomp(arm_matrix_instance_f32* targ_mat, struct eig_decomp_args* eig_args)
 {   
-    targ_mat=eig_args->targ_mat;
     float32_t* eig_vec = eig_args->eig_vec;
     float32_t* s = eig_args->s;
     uint32_t dim_size = eig_args->dim_size;

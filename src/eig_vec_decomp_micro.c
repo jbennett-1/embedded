@@ -26,14 +26,14 @@ void normalize(float32_t* vec, uint32_t vec_len)
 {
     float32_t norm = 0;
     
-    for(int i = 0; i < vec_len; i++)
+    for(int32_t i = 0; i < vec_len; i++)
     {
 	arm_dot_prod_f32(vec, vec, vec_len, &norm);
     }
 
     norm = sqrt(norm);
 
-    for(int i = 0; i < vec_len; i++)
+    for(int32_t i = 0; i < vec_len; i++)
     {    
 	arm_scale_f32(vec, 1/norm, vec, vec_len);
     }
@@ -44,7 +44,7 @@ float32_t l1_error(float32_t* new_vec, float32_t * old_vec, uint32_t vec_len)
 {   
     float32_t error = 0;
     
-    for (int i = 0; i < vec_len; i++)
+    for (int32_t i = 0; i < vec_len; i++)
     {   
 	float32_t diff = new_vec[i] - old_vec[i];
 	error += (diff < 0) ? (diff*-1) : (diff); 

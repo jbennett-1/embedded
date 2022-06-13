@@ -55,34 +55,29 @@ float32_t l1_error(float32_t* new_vec, float32_t * old_vec, uint32_t vec_len)
 
 void eig_decomp(arm_matrix_instance_f32* targ_mat, struct eig_decomp_args* eig_args)
 {   
-    float32_t* eig_vec = eig_args->eig_vec;
-    float32_t* s = eig_args->s;
-    uint32_t dim_size = eig_args->dim_size;
-    uint32_t execs = eig_args->execs;
-    float32_t err_tol = eig_args->err_tol;
     uint64_t i;
     float32_t err;
 
-    for(int16_t j = 0; j < dim_size; j++){
-	eig_vec[j]=1;
+    for(int16_t j = 0; j < eig_args->dim_size; j++){
+	eig_args->eig_vec[j]=1;
     }
 
-    for (i = 0; i < execs; i++)
+    for (i = 0; i < eig_args->execs; i++)
     {
-        arm_mat_vec_mult_f32(targ_mat, eig_vec, s);
-        normalize(s, dim_size);
-        err = l1_error(s, eig_vec, dim_size);
+        arm_mat_vec_mult_f32(targ_mat, eig_args->eig_vec, eig_args->s);
+        normalize(eig_args->s, eig_args->dim_size);
+        err = l1_error(eig_args->s, eig_args->eig_vec, eig_args->dim_size);
 
         // swap the buffers for eigen vectors
-        float32_t* tmp = eig_vec;
-        eig_vec = s;
-        s = tmp;
+        float32_t* tmp = eig_args->eig_vec;
+        eig_args->eig_vec = eig_args->s;
+        eig_args->s = tmp;
 
-        if (err < err_tol){
+        if (err < eig_args->err_tol){
             break;
 	}
     }
-    eig_args->eig_vec = eig_vec;
-    eig_args->s=s;
+    eig_args->eig_vec = eig_args->eig_vec;
+    eig_args->s=eig_args->s;
 }
 

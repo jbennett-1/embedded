@@ -17,7 +17,7 @@ OBJS = \
 	system_ARMCM4.o \
 	timeOptimization.o \
 	eig_vec_decomp_micro.o \
-	first.o
+	first.o 
 
 LIBS = \
 	libCMSISDSPTransform.a \
@@ -57,7 +57,8 @@ debug:
 	TERM=xterm gdb-multiarch -x gdb_init_prot_mode.txt embedded.elf
 
 run:
-	screen -S openocd -d -m openocd -f /home/juliabennett/Desktop/openocd/openocd-code/tcl/board/microchip_same54_xplained_pro.cfg -kernel embedded.elf -serial null -monitor stdio
+	screen -f -L openocd -d -m openocd -f /home/juliabennett/Desktop/openocd/openocd-code/tcl/board/microchip_same54_xplained_pro.cfg -kernel embedded.elf -serial null -monitor stdio
+
 
 disassemble:
 	$(OBJDUMP) -d embedded.elf

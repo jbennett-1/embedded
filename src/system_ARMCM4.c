@@ -49,7 +49,6 @@ extern const VECTOR_TABLE_Type __VECTOR_TABLE[240];
  *----------------------------------------------------------------------------*/
 uint32_t SystemCoreClock = SYSTEM_CLOCK;  /* System Core Clock Frequency */
 
-
 /*----------------------------------------------------------------------------
   System Core Clock update function
  *----------------------------------------------------------------------------*/
@@ -65,17 +64,24 @@ void SystemInit (void)
 {
 
 #if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
-  SCB->VTOR = (uint32_t) &(__VECTOR_TABLE[0]);
+    SCB->VTOR = (uint32_t) &(__VECTOR_TABLE[0]);
 #endif
 
 #if defined (__FPU_USED) && (__FPU_USED == 1U)
-  SCB->CPACR |= ((3U << 10U*2U) |           /* enable CP10 Full Access */
+    SCB->CPACR |= ((3U << 10U*2U) |           /* enable CP10 Full Access */
                  (3U << 11U*2U)  );         /* enable CP11 Full Access */
 #endif
 
 #ifdef UNALIGNED_SUPPORT_DISABLE
-  SCB->CCR |= SCB_CCR_UNALIGN_TRP_Msk;
+    SCB->CCR |= SCB_CCR_UNALIGN_TRP_Msk;
 #endif
 
-  SystemCoreClock = SYSTEM_CLOCK;
+    SystemCoreClock = SYSTEM_CLOCK;
+ 
+/*#if defined (__Vendor_SysTickConfig) && (__Vendor_SysTickConfig == 0U)
+    SysTick->CTRL=
+    Systick->LOAD=
+    SysTick->VAL=
+    SysTick->CALIB=
+*/
 }

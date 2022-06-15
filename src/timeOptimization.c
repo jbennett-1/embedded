@@ -15,7 +15,6 @@ float32_t cov_buffer[(VEC_LEN/2)*(VEC_LEN/2)];
 float32_t cov_mat_means[VEC_LEN/2];
 float32_t eig_buffer[VEC_LEN/2];
 float32_t s_buffer[VEC_LEN];
-uint32_t ms_ticks=0;
 
 arm_matrix_instance_f32 matrix_buffer;
 arm_rfft_fast_instance_f32 fft_data;
@@ -127,37 +126,25 @@ void fft_pca(struct fft_pca_args* args, struct eig_decomp_args* eig_input, uint3
     eig_decomp(&matrix_buffer, eig_input);
 }
 
-void SysTick_Handler(void)
-{
-    ms_ticks++;
-}
-
-
 void main(){
     struct fft_pca_args args; 
     struct eig_decomp_args eig_input;
-    
-    uint32_t returnCode;
-    returnCode = SysTick_Config(SystemCoreClock / 100); //every second
-
-    if(returnCode!=0){
-	SysTick_Handler();
-    }
-    /*write to systick reload register for 100
-      use the calib register, contains number of pulses in 10 ms
-      Bit[31] == 1 indicates that the reference clock is not provided.      
-     */ 
     
     uint8_t ifftFlag=0;
     uint32_t vec_len = VEC_LEN;
     uint32_t vec_num = VEC_NUM;
     uint32_t fftLen=VEC_LEN;
+    uint32_t start_time, stop_time, cycle_count;
+
+    start_time=SysTick->VAL;
 
     initialize(s_buffer, tmp, &eig_input, &args, &matrix_buffer, input_data, vec_len, vec_num, &fft_data, fftLen, ifftFlag, cov_buffer, cov_mat_means, eig_buffer);
-    //flipped order of init and rfft/matrix
+
     arm_rfft_fast_init_f32(&fft_data, fftLen);
     arm_mat_init_f32(&matrix_buffer, vec_len, vec_num, input_data);
 
     fft_pca(&args, &eig_input, vec_len, vec_num, ifftFlag);
+    stop_time=SysTick->VAL;
+    cycle_count = start_time - stop_time;
 }
 

@@ -2,8 +2,6 @@ set confirm off
 target remote localhost:3333
 file embedded.elf
 break _start
-break fft_pca
-break eig_decomp
 layout src
 layout reg
 layout asm

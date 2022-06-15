@@ -76,24 +76,29 @@ void SystemInit (void)
     SCB->CCR |= SCB_CCR_UNALIGN_TRP_Msk;
 #endif
 
-    SystemCoreClock = SYSTEM_CLOCK;
- 
-#if defined (__Vendor_SysTickConfig) && (__Vendor_SysTickConfig == 0U)
-    unsigned int start_time, stop_time, cycle_count;
-    start_time = SysTick->VAL;
+//    uint32_t start_time, stop_time, cycle_count;
     
-    SysTick->CTRL=0; //disables the sysTick
-    SysTick->LOAD=1000; //reloads the value to count down from
-    SysTick->VAL=0;
-    SysTick->CTRL=0x5;
-
-    while(SysTick->VAL != 0);
+    SystemCoreClock = SYSTEM_CLOCK;
+    SysTick_Config(SystemCoreClock / 1000);
+    
+   /* SysTick->CTRL=0; //disables the sysTick
+    SysTick->LOAD=1999; //reloads the value after an exception is passed
+    NVIC_SetPriority(SysTick_IRQn, 3);
+ 
+    SysTick->VAL=0; //clears the current value
 
     start_time=SysTick->VAL;
-    main();
+
+    NVIC_EnableIRQ(SysTick_IRQn); //enables the exception
+    
     stop_time = SysTick->VAL;
+
     cycle_count=start_time - stop_time;
-
-#endif
+*/
 } //end systemInit
-
+/*
+void SysTick_Handler(void)
+{
+    main();
+}
+*/

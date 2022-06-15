@@ -143,6 +143,10 @@ void main(){
     if(returnCode!=0){
 	SysTick_Handler();
     }
+    /*write to systick reload register for 100
+      use the calib register, contains number of pulses in 10 ms
+      Bit[31] == 1 indicates that the reference clock is not provided.      
+     */ 
     
     uint8_t ifftFlag=0;
     uint32_t vec_len = VEC_LEN;

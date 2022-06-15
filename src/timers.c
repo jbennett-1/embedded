@@ -12,7 +12,7 @@ void SysTick_Handler(void)
 int main(void)
 {
     uint32_t returnCode;
-    returnCode = SysTick_Config(SystemCoreClock / 10); //every 10 seconds
+    returnCode = SysTick_Config(SystemCoreClock / 100); //every 10 seconds
     
     if(returnCode != 0){
 	SysTick_Handler();

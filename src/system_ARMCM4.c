@@ -78,10 +78,22 @@ void SystemInit (void)
 
     SystemCoreClock = SYSTEM_CLOCK;
  
-/*#if defined (__Vendor_SysTickConfig) && (__Vendor_SysTickConfig == 0U)
-    SysTick->CTRL=
-    Systick->LOAD=
-    SysTick->VAL=
-    SysTick->CALIB=
-*/
-}
+#if defined (__Vendor_SysTickConfig) && (__Vendor_SysTickConfig == 0U)
+    unsigned int start_time, stop_time, cycle_count;
+    start_time = SysTick->VAL;
+    
+    SysTick->CTRL=0; //disables the sysTick
+    SysTick->LOAD=1000; //reloads the value to count down from
+    SysTick->VAL=0;
+    SysTick->CTRL=0x5;
+
+    while(SysTick->VAL != 0);
+
+    start_time=SysTick->VAL;
+    main();
+    stop_time = SysTick->VAL;
+    cycle_count=start_time - stop_time;
+
+#endif
+} //end systemInit
+

@@ -5,10 +5,11 @@
 #include "arm_const_structs.h"
 
 #define ARMCM4_FP
-#define VEC_NUM 2U
-#define VEC_LEN 256U
+#define VEC_NUM 2U //256, 2^8 vectors, bin function after fft to reduce the size (2048->1024)
+#define VEC_LEN 256U //length 8
 
 extern float32_t input_data[];
+
 float32_t tmp[VEC_LEN/2];
 float32_t cov_buffer[(VEC_LEN/2)*(VEC_LEN/2)];
 float32_t cov_mat_means[VEC_LEN/2];
@@ -95,6 +96,19 @@ void calc_means(float32_t* input_data, float32_t* cov_mat_means, uint32_t vec_le
         cov_mat_means[i] = mean(&input_data[i], vec_len, vec_num);
     } 
 }
+
+void bin(float32_t* input_data)
+{
+    float32_t* b1,b2,b3,b4,b5,b6,b7,b8;
+    for(int i=0; i < vec_len; i++){
+	for(int j : input_data[(vec_len*i)-1]) {
+	    b1[j]=input_data[i];
+	    if(
+}	
+//divide the array into 8 bins
+//no padding, make it as close to the power of 2
+
+
 void cov(float32_t* input_data, float32_t* cov_buffer, float32_t* cov_mat_means, uint32_t vec_len, uint32_t vec_num)
 {
     calc_means(input_data, cov_mat_means, vec_len, vec_num);
@@ -116,10 +130,10 @@ void cov(float32_t* input_data, float32_t* cov_buffer, float32_t* cov_mat_means,
 
 void fft_pca(struct fft_pca_args* args, struct eig_decomp_args* eig_input, uint32_t vec_len, uint32_t vec_num, uint8_t ifftFlag)
 { 
-    fft_obs_matrix(vec_len, vec_num, ifftFlag,args->input_data);
-   
+    fft_obs_matrix(vec_len, vec_num, ifftFlag,args->input_data);   
     vec_len = (vec_len/2); // since data is real, vectors after fft are length n/2 + 1     input_data = data_buffer
-    
+    bin(args->input_data,
+
     cov(args->input_data, cov_buffer, cov_mat_means, vec_len, vec_num);
     
     eig_decomp(&matrix_buffer, eig_input);
@@ -128,7 +142,6 @@ void fft_pca(struct fft_pca_args* args, struct eig_decomp_args* eig_input, uint3
 void main(){
     struct fft_pca_args args; 
     struct eig_decomp_args eig_input;
-    uint32_t start_time, stop_time, cycle_count;
     extern uint32_t tick;
     tick=0;   
 

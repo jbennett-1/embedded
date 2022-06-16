@@ -79,7 +79,8 @@ void SystemInit (void)
 //    uint32_t start_time, stop_time, cycle_count;
     
     SystemCoreClock = SYSTEM_CLOCK;
-    SysTick_Config(SystemCoreClock / 1000);
+
+//    SysTick_Config(SystemCoreClock / 1000);
     
    /* SysTick->CTRL=0; //disables the sysTick
     SysTick->LOAD=1999; //reloads the value after an exception is passed

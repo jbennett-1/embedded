@@ -16,6 +16,8 @@ float32_t cov_mat_means[VEC_LEN/2];
 float32_t eig_buffer[VEC_LEN/2];
 float32_t s_buffer[VEC_LEN];
 
+static volatile unsigned int tick=0;
+
 arm_matrix_instance_f32 matrix_buffer;
 arm_rfft_fast_instance_f32 fft_data;
 
@@ -125,6 +127,11 @@ void fft_pca(struct fft_pca_args* args, struct eig_decomp_args* eig_input, uint3
     
     eig_decomp(&matrix_buffer, eig_input);
 }
+void SysTick_Handler(){
+    tick++;
+    if(SysTick->LOAD==0)
+	return tick;
+}
 
 void main(){
     struct fft_pca_args args; 
@@ -136,7 +143,10 @@ void main(){
     uint32_t fftLen=VEC_LEN;
     uint32_t start_time, stop_time, cycle_count;
 
-    start_time=SysTick->VAL;
+    SysTick->CTRL=0;
+
+    SysTick_Config(SystemCoreClock / 1000);
+    start_time=(SystemCoreClock/1000) - (SysTick->VAL);
 
     initialize(s_buffer, tmp, &eig_input, &args, &matrix_buffer, input_data, vec_len, vec_num, &fft_data, fftLen, ifftFlag, cov_buffer, cov_mat_means, eig_buffer);
 
@@ -144,7 +154,7 @@ void main(){
     arm_mat_init_f32(&matrix_buffer, vec_len, vec_num, input_data);
 
     fft_pca(&args, &eig_input, vec_len, vec_num, ifftFlag);
-    stop_time=SysTick->VAL;
-    cycle_count = start_time - stop_time;
+   // stop_time=SysTick->VAL;
+    //cycle_count = start_time - stop_time;
 }
 

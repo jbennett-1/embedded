@@ -76,30 +76,8 @@ void SystemInit (void)
     SCB->CCR |= SCB_CCR_UNALIGN_TRP_Msk;
 #endif
 
-//    uint32_t start_time, stop_time, cycle_count;
-    
     SystemCoreClock = SYSTEM_CLOCK;
 
-//    SysTick_Config(SystemCoreClock / 1000);
-    
-   /* SysTick->CTRL=0; //disables the sysTick
-    SysTick->LOAD=1999; //reloads the value after an exception is passed
-    NVIC_SetPriority(SysTick_IRQn, 3);
- 
-    SysTick->VAL=0; //clears the current value
 
-    start_time=SysTick->VAL;
-
-    NVIC_EnableIRQ(SysTick_IRQn); //enables the exception
-    
-    stop_time = SysTick->VAL;
-
-    cycle_count=start_time - stop_time;
-*/
 } //end systemInit
-/*
-void SysTick_Handler(void)
-{
-    main();
-}
-*/
+

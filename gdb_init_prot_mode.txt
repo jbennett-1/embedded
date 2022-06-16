@@ -2,6 +2,7 @@ set confirm off
 target remote localhost:3333
 file embedded.elf
 break _start
+break timeOptimization.c:155
 layout src
 layout reg
 layout asm

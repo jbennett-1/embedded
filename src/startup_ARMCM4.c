@@ -38,11 +38,17 @@ extern uint32_t __INITIAL_SP;
 
 extern __NO_RETURN void __PROGRAM_START(void);
 
+uint32_t tick=0;
 /*----------------------------------------------------------------------------
   Internal References
  *----------------------------------------------------------------------------*/
 __NO_RETURN void Reset_Handler  (void);
             void Default_Handler(void);
+
+void SysTick_julia_Handler(void)
+{
+    tick++;
+}
 
 /*----------------------------------------------------------------------------
   Exception / Interrupt Handler
@@ -96,7 +102,7 @@ extern const VECTOR_TABLE_Type __VECTOR_TABLE[240];
   DebugMon_Handler,                         /*  -4 Debug Monitor Handler */
   0,                                        /*     Reserved */
   PendSV_Handler,                           /*  -2 PendSV Handler */
-  SysTick_Handler,                          /*  -1 SysTick Handler */
+  SysTick_julia_Handler,                          /*  -1 SysTick Handler */
 
   /* Interrupts */
   Interrupt0_Handler,                       /*   0 Interrupt 0 */
@@ -111,6 +117,7 @@ extern const VECTOR_TABLE_Type __VECTOR_TABLE[240];
   Interrupt9_Handler                        /*   9 Interrupt 9 */
                                             /* Interrupts 10 .. 223 are left out */
 };
+
 
 #if defined ( __GNUC__ )
 #pragma GCC diagnostic pop
@@ -146,6 +153,7 @@ void Default_Handler(void)
 {
   while(1);
 }
+
 
 #if defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
   #pragma clang diagnostic pop

@@ -4,7 +4,7 @@ OBJCOPY := arm-none-eabi-objcopy
 OBJDUMP := arm-none-eabi-objdump
 SIZE := arm-none-eabi-size
 
-CFLAGS := -O0 -fno-pie -ffreestanding -nostartfiles -fno-stack-protector -g3 -mthumb -Wall -mfloat-abi=hard -mfpu=fpv4-sp-d16 -march=armv7e-m
+CFLAGS := -O3 -fno-pie -ffreestanding -nostartfiles -fno-stack-protector -g3 -mthumb -Wall -mfloat-abi=hard -mfpu=fpv4-sp-d16 -march=armv7e-m
 CFLAGS += -I./Include -I./Include/dsp -ffunction-sections -mno-unaligned-access
 LDFLAGS := -Wl,--gc-sections
 
@@ -17,7 +17,8 @@ OBJS = \
 	system_ARMCM4.o \
 	timeOptimization.o \
 	eig_vec_decomp_micro.o \
-	first.o 
+	first.o \
+	input.o
 
 LIBS = \
 	libCMSISDSPTransform.a \
@@ -57,7 +58,7 @@ debug:
 	TERM=xterm gdb-multiarch -x gdb_init_prot_mode.txt embedded.elf
 
 run:
-	screen -f -L openocd -d -m openocd -f /home/juliabennett/Desktop/openocd/openocd-code/tcl/board/microchip_same54_xplained_pro.cfg -kernel embedded.elf -serial null -monitor stdio
+	screen -S openocd -d -m openocd -f /home/juliabennett/Desktop/openocd/openocd-code/tcl/board/microchip_same54_xplained_pro.cfg -kernel embedded.elf -serial null -monitor stdio
 
 
 disassemble:

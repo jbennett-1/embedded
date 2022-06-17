@@ -1,15 +1,14 @@
-#include <stdint.h>
 #include "eig_vec_decomp.h"
 #include "system.h"
 #include "arm_math.h"
-#include "arm_const_structs.h"
 
 #define ARMCM4_FP
-#define VEC_NUM 2U //256, 2^8 vectors, bin function after fft to reduce the size (2048->1024)
+#define VEC_NUM 8U //256, 2^8 vectors, bin function after fft to reduce the size (2048->1024)
 #define VEC_LEN 256U //length 8
 
 extern float32_t input_data[];
 
+float32_t bin_group[VEC_NUM*8]; //change to 8 with data
 float32_t tmp[VEC_LEN/2];
 float32_t cov_buffer[(VEC_LEN/2)*(VEC_LEN/2)];
 float32_t cov_mat_means[VEC_LEN/2];
@@ -58,7 +57,7 @@ void initialize(float32_t* s_buffer, float32_t* tmp, struct eig_decomp_args* eig
     eig_input->eig_vec=eig_buffer;
     eig_input->dim_size=vec_len/2;
     eig_input->s=s_buffer;
-    eig_input->execs=100;
+    eig_input->execs=10000;
     eig_input->err_tol=0.01;
 }
 
@@ -97,14 +96,20 @@ void calc_means(float32_t* input_data, float32_t* cov_mat_means, uint32_t vec_le
     } 
 }
 
-void bin(float32_t* input_data)
+void bin(float32_t* input_data, uint32_t vec_len, uint32_t vec_num, uint32_t bins)
 {
-    float32_t* b1,b2,b3,b4,b5,b6,b7,b8;
-    for(int i=0; i < vec_len; i++){
-	for(int j : input_data[(vec_len*i)-1]) {
-	    b1[j]=input_data[i];
-	    if(
-}	
+   uint32_t block_size = vec_len/bins;
+   
+   for(uint32_t e = 0; e < vec_num; e++) { //iterator through bins
+	for(uint32_t i=0; i < bins; i++) { //change to /8 when vec num is changed   
+	    for(uint32_t b=0; b < block_size; b++) {
+		bin_group[i] = input_data[i*block_size+b]; //change to +7 later
+    	    }
+	} 
+    }
+}
+
+	
 //divide the array into 8 bins
 //no padding, make it as close to the power of 2
 
@@ -130,9 +135,11 @@ void cov(float32_t* input_data, float32_t* cov_buffer, float32_t* cov_mat_means,
 
 void fft_pca(struct fft_pca_args* args, struct eig_decomp_args* eig_input, uint32_t vec_len, uint32_t vec_num, uint8_t ifftFlag)
 { 
+    uint32_t bins=8;
+
     fft_obs_matrix(vec_len, vec_num, ifftFlag,args->input_data);   
     vec_len = (vec_len/2); // since data is real, vectors after fft are length n/2 + 1     input_data = data_buffer
-    bin(args->input_data,
+    bin(args->input_data,vec_len,vec_num, bins);
 
     cov(args->input_data, cov_buffer, cov_mat_means, vec_len, vec_num);
     
@@ -143,7 +150,7 @@ void main(){
     struct fft_pca_args args; 
     struct eig_decomp_args eig_input;
     extern uint32_t tick;
-    tick=0;   
+    tick=0;
 
     uint8_t ifftFlag=0;
     uint32_t vec_len = VEC_LEN;
@@ -151,17 +158,16 @@ void main(){
     uint32_t fftLen=VEC_LEN;
 
     initialize(s_buffer, tmp, &eig_input, &args, &matrix_buffer, input_data, vec_len, vec_num, &fft_data, fftLen, ifftFlag, cov_buffer, cov_mat_means, eig_buffer);
- 
-    SysTick->LOAD=0;
+
     SysTick->CTRL=0;
     SysTick->VAL=0;
-    SysTick_Config(SystemCoreClock/1000);
+    SysTick_Config((SystemCoreClock/500)); //parameter becomes reload value
     NVIC_EnableIRQ(SysTick_IRQn); 
-    asm("cpsie if");    
-    
-    arm_rfft_fast_init_f32(&fft_data, fftLen);
+    asm("cpsie if");
+
+    arm_rfft_fast_init_f32(&fft_data, fftLen);  
     arm_mat_init_f32(&matrix_buffer, vec_len, vec_num, input_data);
 
-    fft_pca(&args, &eig_input, vec_len, vec_num, ifftFlag);
+    fft_pca(&args, &eig_input, vec_num, vec_len, ifftFlag);
 }
 

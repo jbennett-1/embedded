@@ -45,7 +45,7 @@ uint32_t tick=0;
 __NO_RETURN void Reset_Handler  (void);
             void Default_Handler(void);
 
-void SysTick_julia_Handler(void)
+void SysTick_newDef_Handler(void)
 {
     tick++;
 }
@@ -102,7 +102,7 @@ extern const VECTOR_TABLE_Type __VECTOR_TABLE[240];
   DebugMon_Handler,                         /*  -4 Debug Monitor Handler */
   0,                                        /*     Reserved */
   PendSV_Handler,                           /*  -2 PendSV Handler */
-  SysTick_julia_Handler,                          /*  -1 SysTick Handler */
+  SysTick_newDef_Handler,                          /*  -1 SysTick Handler */
 
   /* Interrupts */
   Interrupt0_Handler,                       /*   0 Interrupt 0 */

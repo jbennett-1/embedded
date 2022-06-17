@@ -3,7 +3,6 @@ target remote localhost:3333
 file embedded.elf
 break _start
 display tick
-break timeOptimization.c:155
 layout src
 layout reg
 layout asm

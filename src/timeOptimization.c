@@ -109,11 +109,6 @@ void bin(float32_t* input_data, uint32_t vec_len, uint32_t vec_num, uint32_t bin
     }
 }
 
-	
-//divide the array into 8 bins
-//no padding, make it as close to the power of 2
-
-
 void cov(float32_t* input_data, float32_t* cov_buffer, float32_t* cov_mat_means, uint32_t vec_len, uint32_t vec_num)
 {
     calc_means(input_data, cov_mat_means, vec_len, vec_num);

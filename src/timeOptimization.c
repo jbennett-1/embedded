@@ -15,6 +15,8 @@ float32_t cov_buffer[(BIN_NUM)];
 float32_t cov_mat_means[VEC_LEN/2];
 float32_t eig_buffer[VEC_LEN/2];
 float32_t s_buffer[VEC_LEN];
+float32_t sW[BIN_NUM];
+float32_t deflation_matrix[BIN_NUM*BIN_NUM];
 
 arm_matrix_instance_f32 matrix_buffer;
 arm_rfft_fast_instance_f32 fft_data;
@@ -28,6 +30,8 @@ struct fft_pca_args{
     float32_t* cov_mat_means;
     float32_t* output_buffer;
     float32_t* tmp;
+    float32_t* sW;
+    float32_t* deflation_matrix;
      
     arm_matrix_instance_f32* matrix_buffer;
     uint32_t vec_len;
@@ -41,7 +45,7 @@ struct fft_pca_args{
 
 };
 
-void initialize(uint32_t bin_num, float32_t* bin_group, float32_t* s_buffer, float32_t* tmp, struct eig_decomp_args* eig_input, struct fft_pca_args* input, arm_matrix_instance_f32* matrix_buffer, float32_t* input_data, uint32_t vec_len, uint32_t vec_num, arm_rfft_fast_instance_f32* fft_data, uint32_t fftLen, uint8_t ifftFlag, float32_t* cov_buffer, float32_t* cov_mat_means, float32_t* eig_buffer)
+void initialize(float32_t *sW, float32_t *deflation_matrix, uint32_t bin_num, float32_t* bin_group, float32_t* s_buffer, float32_t* tmp, struct eig_decomp_args* eig_input, struct fft_pca_args* input, arm_matrix_instance_f32* matrix_buffer, float32_t* input_data, uint32_t vec_len, uint32_t vec_num, arm_rfft_fast_instance_f32* fft_data, uint32_t fftLen, uint8_t ifftFlag, float32_t* cov_buffer, float32_t* cov_mat_means, float32_t* eig_buffer)
 {
     input->bin_num=bin_num;
     input->bin_group=bin_group;
@@ -59,6 +63,8 @@ void initialize(uint32_t bin_num, float32_t* bin_group, float32_t* s_buffer, flo
     input->fftLen = fftLen;
     input->ifftFlag = ifftFlag;
 
+    eig_input->Sw = sW;
+    eig_input->deflation_matrix=deflation_matrix;
     eig_input->eig_vec=eig_buffer;
     eig_input->dim_size=bin_num;
     eig_input->s=s_buffer;
@@ -160,7 +166,7 @@ void main(){
     uint32_t bin_num=BIN_NUM;
     uint32_t fftLen=VEC_LEN;
 
-    initialize(bin_num, bin_group, s_buffer, tmp, &eig_input, &args, &matrix_buffer, input_data, vec_len, vec_num, &fft_data, fftLen, ifftFlag, cov_buffer, cov_mat_means, eig_buffer);
+    initialize(sW, deflation_matrix, bin_num, bin_group, s_buffer, tmp, &eig_input, &args, &matrix_buffer, input_data, vec_len, vec_num, &fft_data, fftLen, ifftFlag, cov_buffer, cov_mat_means, eig_buffer);
 
     SysTick->CTRL=0;
     SysTick->VAL=0;

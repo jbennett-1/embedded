@@ -4,62 +4,164 @@
 #define ARMCM4_FP
 #include <math.h>
 
+void normalize(float32_t* vec, uint32_t vec_len);
+float l1_error(float32_t* new_vec, float32_t* old_vec, uint32_t vec_len);
+void matrix_vec_mult(float32_t* mat, uint32_t dim_size, float32_t* vec, float32_t* new_vec);
+
 void normalize(float32_t* vec, uint32_t vec_len)
 {
     float32_t norm = 0;
-    
-    for(int32_t i = 0; i < vec_len; i++)
+
+    for (int32_t i = 0; i < vec_len; i++)
     {
-	arm_dot_prod_f32(vec, vec, vec_len, &norm);
+        norm += vec[i]*vec[i];
     }
 
-    norm = sqrt(norm);
+    norm = sqrtf(norm);
 
-    for(int32_t i = 0; i < vec_len; i++)
-    {    
-	arm_scale_f32(vec, 1/norm, vec, vec_len);
+    for (int32_t i = 0; i < vec_len; i++)
+    {
+        vec[i] = vec[i] / norm;
     }
-
 }
 
-float32_t l1_error(float32_t* new_vec, float32_t * old_vec, uint32_t vec_len)
-{   
+float32_t l1_error(float32_t* new_vec, float32_t* old_vec, uint32_t vec_len)
+{
     float32_t error = 0;
-    
+
     for (int32_t i = 0; i < vec_len; i++)
-    {   
-	float32_t diff = new_vec[i] - old_vec[i];
-	error += (diff < 0) ? (diff*-1) : (diff); 
-	}
-    
+    {
+        error += fabsf(new_vec[i] - old_vec[i]);
+    }
+
     return error;
 }
 
-void eig_decomp(arm_matrix_instance_f32* targ_mat, struct eig_decomp_args* eig_args)
-{   
-    uint64_t i;
-    float32_t err;
-
-    for(int16_t j = 0; j < eig_args->dim_size; j++){
-	eig_args->eig_vec[j]=1;
-    }
-
-    for (i = 0; i < eig_args->execs; i++)
+void matrix_vec_mult(float32_t* mat, uint32_t dim_size, float32_t* vec, float32_t* new_vec)
+{
+    for (uint32_t i = 0; i < dim_size; i++)
     {
-        arm_mat_vec_mult_f32(targ_mat, eig_args->eig_vec, eig_args->s);
-        normalize(eig_args->s, eig_args->dim_size);
-        err = l1_error(eig_args->s, eig_args->eig_vec, eig_args->dim_size);
-
-        // swap the buffers for eigen vectors
-        float32_t* tmp = eig_args->eig_vec;
-        eig_args->eig_vec = eig_args->s;
-        eig_args->s = tmp;
-
-        if (err < eig_args->err_tol){
-            break;
-	}
+        new_vec[i] = 0;
+        for (uint32_t j = 0; j < dim_size; j++)
+        {
+            new_vec[i] += mat[i*dim_size + j] * vec[j];
+        }
     }
-    eig_args->eig_vec = eig_args->eig_vec;
-    eig_args->s=eig_args->s;
 }
 
+/*
+ * inner_product
+ *
+ * Computes the inner (dot) product between vectors a and b, both of length
+ * dim_size. Returns the scalar result.
+ */
+float32_t inner_product(float32_t *a, float32_t *b, uint32_t dim_size) {
+    float32_t result = 0.;
+
+    for(int32_t k = 0; k < dim_size; k++) {
+        result += a[k] * b[k];
+    }
+    return result;
+}
+
+/*
+ * outer_product
+ *
+ * Computes the outer product between matricies a and b:
+ *
+ *    a  *  b  =  out
+ *  (nx1) (1xn)  (nxn)
+ *
+ */
+void outer_product(float32_t *a, float32_t *b, uint32_t dim_size, float32_t *out) {
+    for (uint32_t row = 0; row < dim_size; row++) {
+        for (uint32_t col = 0; col < dim_size; col++) {
+            out[row*dim_size+col] = a[row] * b[col];
+        }
+    }   
+}
+
+int power_iteration(arm_matrix_instance_f32* matrix, struct eig_decomp_args* args)
+{
+    float32_t* mat = matrix;
+    float32_t* eig_vec = args->eig_vec;
+    float32_t* s = args->s;
+    uint32_t dim_size = args->dim_size;
+    uint32_t execs = args->execs;
+    float32_t err_tol = args->err_tol;
+    float32_t err = 0;
+    uint32_t i = 0;
+    
+    for (i = 0; i < dim_size; i++)
+    {
+        eig_vec[i] = 1;
+    }
+
+    for (i = 0; i < execs; i++)
+    {
+        arm_mat_vec_mult_f32(mat, dim_size, eig_vec, s);
+        normalize(s, dim_size);
+        err = l1_error(s, eig_vec, dim_size);
+
+        // swap the buffers for eigen vectors
+        float32_t* tmp = eig_vec;
+        eig_vec = s;
+        s = tmp;
+        
+        if (err < err_tol)
+            break;
+    }
+
+    args->eig_vec = eig_vec;
+    args->s = s;
+
+    return i;
+}
+
+
+void eig_decomp(arm_matrix_instance_f32* matrix, struct eig_decomp_args* e_args) {
+    int32_t i,k;
+    uint32_t nvecs = e_args->eig_vec_num;
+    
+    for(k = 0; k < nvecs; k++) {
+
+        // First, use power iteration to extract the dominant eigenvector of matrix.
+        convergence[k] = power_iteration(matrix, e_args);
+        
+        // Copy eigenvector into output buffer for extracted eigenvectors
+        for(int32_t i =0; i<e_args->dim_size;i++) {
+		e_args->eig_vec[k*e_args->dim_size+i]=e_args->eig_vec[i];
+	}
+
+        // Deflate the dominant eigenvector from the matrid
+        // S = S - w*w'*S*w*w'
+        // S = S - w*(w'*(S*w)*w'
+        //                mat-vec-mult
+        //           |  inner prod    |
+        //           |  elem-wise mult     |
+        //         |   outer product      |
+        // matrix vector multiplication S*w
+        // verified correct result (Sw) in Matlab
+        arm_mat_vec_mult_f32(matrix, e_args->dim_size, e_args->eig_vec, e_args->Sw);
+
+        // inner product w'*S*w
+        // verified correct result wTSw in Matlab
+        float32_t wTSw = inner_product(e_args->Sw, e_args->eig_vec, e_args->dim_size);
+
+        // Element-wise multiplication.
+        memcpy(Sw, eig_vec, dim_size * sizeof(float));
+        for(i = 0; i < dim_size; i++) {
+            Sw[i] *= wTSw;
+        }
+
+        // Finally, do the outer product between w and w'*S*w*w', which is stored in variable Sw
+        outer_product(e_args->eig_vec, e_args->Sw, e_args->dim_size, e_args->deflation_matrix);
+
+        // Last, subtract the deflation matrix from S.
+        for(i = 0; i < e_args->dim_size*e_args->dim_size; i++){
+            matrix[i] -= e_args->deflation_matrix[i];
+        }
+	
+    }
+
+}

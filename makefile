@@ -4,7 +4,7 @@ OBJCOPY := arm-none-eabi-objcopy
 OBJDUMP := arm-none-eabi-objdump
 SIZE := arm-none-eabi-size
 
-CFLAGS := -O3 -fno-pie -ffreestanding -nostartfiles -fno-stack-protector -g3 -mthumb -Wall -mfloat-abi=hard -mfpu=fpv4-sp-d16 -march=armv7e-m
+CFLAGS := -O0 -fno-pie -ffreestanding -nostartfiles -fno-stack-protector -g3 -mthumb -Wall -mfloat-abi=hard -mfpu=fpv4-sp-d16 -march=armv7e-m
 CFLAGS += -I./Include -I./Include/dsp -ffunction-sections -mno-unaligned-access
 LDFLAGS := -Wl,--gc-sections
 
@@ -18,7 +18,7 @@ OBJS = \
 	timeOptimization.o \
 	eig_vec_decomp_micro.o \
 	first.o \
-	input.o
+	data.o
 
 LIBS = \
 	libCMSISDSPTransform.a \

@@ -38,7 +38,7 @@ extern uint32_t __INITIAL_SP;
 
 extern __NO_RETURN void __PROGRAM_START(void);
 
-uint32_t tick=0;
+uint32_t tick;
 /*----------------------------------------------------------------------------
   Internal References
  *----------------------------------------------------------------------------*/

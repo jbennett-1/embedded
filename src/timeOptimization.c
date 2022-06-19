@@ -141,6 +141,31 @@ void cov(float32_t* bin_group, float32_t* cov_buffer, float32_t* cov_mat_means, 
     }
 }
 
+void fix_directions(float32_t* eig_vec, uint32_t eig_vec_num, uint32_t bin_num)
+{
+    for (uint32_t i = 0; i < eig_vec_num; i++) {
+        float32_t max = 0;
+        for (uint32_t j = 0; j < bin_num; j++) {
+            float32_t val = eig_vec[i*bin_num + j];
+            if (val < 0) { 
+                val *= -1;
+            }
+            if (val > max) {
+                max = eig_vec[i*bin_num + j];
+            }
+        }
+        if (max < 0) {
+            for (uint32_t j = 0; j < bin_num; j++) {
+                eig_vec[i*bin_num + j] *= -1;
+            }
+        }
+    }
+}
+
+void bit_gen(){
+
+}
+
 void fft_pca(float32_t* input_data, struct fft_pca_args* args, struct eig_decomp_args* eig_input, uint32_t vec_len, uint32_t vec_num, uint32_t bin_num, uint8_t ifftFlag)
 { 
 
@@ -151,6 +176,8 @@ void fft_pca(float32_t* input_data, struct fft_pca_args* args, struct eig_decomp
     cov(bin_group, cov_buffer, cov_mat_means, bin_num, vec_num);
     
     eig_decomp(&matrix_buffer, eig_input);
+    fix_directions(eig_input->eig_vec, eig_input->eig_vec_num, bin_num);
+    //bit_gen();
 }
 
 void main(){
@@ -165,7 +192,7 @@ void main(){
     uint32_t bin_num=BIN_NUM;
     uint32_t fftLen=VEC_LEN;
 
-    float32_t deflation_matrix[BIN_NUM];
+    float32_t deflation_matrix[BIN_NUM*BIN_NUM];
     float32_t Sw[BIN_NUM];        
 
     initialize(Sw, deflation_matrix, bin_num, bin_group, s_buffer, tmp, &eig_input, &args, &matrix_buffer, input_data, vec_len, vec_num, &fft_data, fftLen, ifftFlag, cov_buffer, cov_mat_means, eig_buffer);

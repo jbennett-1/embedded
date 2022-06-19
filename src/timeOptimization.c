@@ -15,7 +15,7 @@ float32_t cov_buffer[(BIN_NUM)];
 float32_t cov_mat_means[VEC_LEN/2];
 float32_t eig_buffer[VEC_LEN/2];
 float32_t s_buffer[VEC_LEN];
-float32_t sW[BIN_NUM];
+float32_t Sw[BIN_NUM];
 float32_t deflation_matrix[BIN_NUM*BIN_NUM];
 
 arm_matrix_instance_f32 matrix_buffer;
@@ -30,7 +30,7 @@ struct fft_pca_args{
     float32_t* cov_mat_means;
     float32_t* output_buffer;
     float32_t* tmp;
-    float32_t* sW;
+    float32_t* Sw;
     float32_t* deflation_matrix;
      
     arm_matrix_instance_f32* matrix_buffer;
@@ -45,7 +45,7 @@ struct fft_pca_args{
 
 };
 
-void initialize(float32_t *sW, float32_t *deflation_matrix, uint32_t bin_num, float32_t* bin_group, float32_t* s_buffer, float32_t* tmp, struct eig_decomp_args* eig_input, struct fft_pca_args* input, arm_matrix_instance_f32* matrix_buffer, float32_t* input_data, uint32_t vec_len, uint32_t vec_num, arm_rfft_fast_instance_f32* fft_data, uint32_t fftLen, uint8_t ifftFlag, float32_t* cov_buffer, float32_t* cov_mat_means, float32_t* eig_buffer)
+void initialize(float32_t *Sw, float32_t *deflation_matrix, uint32_t bin_num, float32_t* bin_group, float32_t* s_buffer, float32_t* tmp, struct eig_decomp_args* eig_input, struct fft_pca_args* input, arm_matrix_instance_f32* matrix_buffer, float32_t* input_data, uint32_t vec_len, uint32_t vec_num, arm_rfft_fast_instance_f32* fft_data, uint32_t fftLen, uint8_t ifftFlag, float32_t* cov_buffer, float32_t* cov_mat_means, float32_t* eig_buffer)
 {
     input->bin_num=bin_num;
     input->bin_group=bin_group;
@@ -63,7 +63,7 @@ void initialize(float32_t *sW, float32_t *deflation_matrix, uint32_t bin_num, fl
     input->fftLen = fftLen;
     input->ifftFlag = ifftFlag;
 
-    eig_input->Sw = sW;
+    eig_input->Sw = Sw;
     eig_input->deflation_matrix=deflation_matrix;
     eig_input->eig_vec=eig_buffer;
     eig_input->dim_size=bin_num;
@@ -107,36 +107,36 @@ void calc_means(float32_t* input_data, float32_t* cov_mat_means, uint32_t vec_le
     } 
 }
 
-void bin(arm_matrix_instance_f32* matrix_buffer, float32_t* input_data, uint32_t vec_len, uint32_t vec_num)
+void bin(uint32_t bin_num, float32_t* input_data, uint32_t vec_len, uint32_t vec_num)
 {
    uint32_t bins=8;
    uint32_t block_size = vec_len/bins;
 
    for(uint32_t e = 0; e < vec_num; e++) { //iterator through bins
-	for(uint32_t i=0; i < bins; i++) { //change to /8 when vec num is changed   
+	for(uint32_t i=0; i < bins; i++) { 
 	    for(uint32_t b=0; b < block_size; b++) {
-		bin_group[i+e*bins] = input_data[i*block_size+b+e*vec_len]; //change to +7 later
+		bin_group[i+e*bins] = input_data[i*block_size+b+e*vec_len];
     	    }
 	} 
     }
-
-    matrix_buffer->pData=bin_group;
+//    matrix_buffer->pData=bin_group;
+    arm_mat_init_f32(&matrix_buffer, bin_num, vec_num,bin_group);
 }
 
-void cov(float32_t* bin_group, float32_t* cov_buffer, float32_t* cov_mat_means, uint32_t vec_len, uint32_t vec_num)
+void cov(float32_t* bin_group, float32_t* cov_buffer, float32_t* cov_mat_means, uint32_t bin_num, uint32_t vec_num)
 {
-    calc_means(bin_group, cov_mat_means, vec_len, vec_num);
+    calc_means(bin_group, cov_mat_means, bin_num, vec_num);
 
-    for (int32_t i = 0; i < vec_len; i++) {
-        for (int32_t j = i; j < vec_len; j++) {
+    for (int32_t i = 0; i < bin_num; i++) {
+        for (int32_t j = i; j < bin_num; j++) {
             // calculate covariance between two vectors
-            cov_buffer[i*vec_len + j] = 0;
+            cov_buffer[i*bin_num + j] = 0;
             for (int32_t k = 0; k < vec_num; k++) {
-                cov_buffer[i*vec_len + j] += (bin_group[k*vec_len+i]-cov_mat_means[i])*(input_data[k*vec_len+j]-cov_mat_means[j]);
+                cov_buffer[i*bin_num + j] += (bin_group[k*bin_num+i]-cov_mat_means[i])*(input_data[k*bin_num+j]-cov_mat_means[j]);
             }
-            cov_buffer[i*vec_len + j] /= vec_num - 1;
+            cov_buffer[i*bin_num + j] /= vec_num - 1;
             if (i != j) {
-                cov_buffer[j*vec_len + i] = cov_buffer[i*vec_len + j];
+                cov_buffer[j*bin_num + i] = cov_buffer[i*bin_num + j];
             }
         }
     }
@@ -147,9 +147,9 @@ void fft_pca(float32_t* input_data, arm_matrix_instance_f32* matrix_buffer,struc
 
     fft_obs_matrix(vec_len, vec_num, ifftFlag,input_data);
     vec_len = (vec_len/2); // since data is real, vectors after fft are length n/2 + 1     input_data = data_buffer
-    bin(matrix_buffer,input_data,vec_len,bin_num);
+    bin(args->bin_num,input_data,vec_len,bin_num);
 
-    cov(bin_group, cov_buffer, cov_mat_means, vec_len, vec_num);
+    cov(bin_group, cov_buffer, cov_mat_means, bin_num, vec_num);
     
     eig_decomp(matrix_buffer, eig_input);
 }
@@ -166,7 +166,7 @@ void main(){
     uint32_t bin_num=BIN_NUM;
     uint32_t fftLen=VEC_LEN;
 
-    initialize(sW, deflation_matrix, bin_num, bin_group, s_buffer, tmp, &eig_input, &args, &matrix_buffer, input_data, vec_len, vec_num, &fft_data, fftLen, ifftFlag, cov_buffer, cov_mat_means, eig_buffer);
+    initialize(Sw, deflation_matrix, bin_num, bin_group, s_buffer, tmp, &eig_input, &args, &matrix_buffer, input_data, vec_len, vec_num, &fft_data, fftLen, ifftFlag, cov_buffer, cov_mat_means, eig_buffer);
 
     SysTick->CTRL=0;
     SysTick->VAL=0;

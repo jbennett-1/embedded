@@ -37,18 +37,6 @@ float32_t l1_error(float32_t* new_vec, float32_t* old_vec, uint32_t vec_len)
     return error;
 }
 
-void matrix_vec_mult(float32_t* mat, uint32_t dim_size, float32_t* vec, float32_t* new_vec)
-{
-    for (uint32_t i = 0; i < dim_size; i++)
-    {
-        new_vec[i] = 0;
-        for (uint32_t j = 0; j < dim_size; j++)
-        {
-            new_vec[i] += mat[i*dim_size + j] * vec[j];
-        }
-    }
-}
-
 /*
  * inner_product
  *
@@ -81,9 +69,8 @@ void outer_product(float32_t *a, float32_t *b, uint32_t dim_size, float32_t *out
     }   
 }
 
-int power_iteration(arm_matrix_instance_f32* matrix, struct eig_decomp_args* args)
+int power_iteration(arm_matrix_instance_f32* mat, struct eig_decomp_args* args)
 {
-    float32_t* mat = matrix;
     float32_t* eig_vec = args->eig_vec;
     float32_t* s = args->s;
     uint32_t dim_size = args->dim_size;
@@ -99,7 +86,7 @@ int power_iteration(arm_matrix_instance_f32* matrix, struct eig_decomp_args* arg
 
     for (i = 0; i < execs; i++)
     {
-        arm_mat_vec_mult_f32(mat, dim_size, eig_vec, s);
+        arm_mat_vec_mult_f32(mat, eig_vec, s);
         normalize(s, dim_size);
         err = l1_error(s, eig_vec, dim_size);
 
@@ -126,11 +113,10 @@ void eig_decomp(arm_matrix_instance_f32* matrix, struct eig_decomp_args* e_args)
     for(k = 0; k < nvecs; k++) {
 
         // First, use power iteration to extract the dominant eigenvector of matrix.
-        convergence[k] = power_iteration(matrix, e_args);
         
         // Copy eigenvector into output buffer for extracted eigenvectors
-        for(int32_t i =0; i<e_args->dim_size;i++) {
-		e_args->eig_vec[k*e_args->dim_size+i]=e_args->eig_vec[i];
+        for(int s =0; s<e_args->dim_size;s++) {
+		e_args->eig_vec[k*e_args->dim_size+s]=e_args->eig_vec[s];
 	}
 
         // Deflate the dominant eigenvector from the matrid
@@ -142,16 +128,20 @@ void eig_decomp(arm_matrix_instance_f32* matrix, struct eig_decomp_args* e_args)
         //         |   outer product      |
         // matrix vector multiplication S*w
         // verified correct result (Sw) in Matlab
-        arm_mat_vec_mult_f32(matrix, e_args->dim_size, e_args->eig_vec, e_args->Sw);
+        arm_mat_vec_mult_f32(matrix, e_args->eig_vec, e_args->Sw);
 
         // inner product w'*S*w
         // verified correct result wTSw in Matlab
         float32_t wTSw = inner_product(e_args->Sw, e_args->eig_vec, e_args->dim_size);
 
         // Element-wise multiplication.
-        memcpy(Sw, eig_vec, dim_size * sizeof(float));
-        for(i = 0; i < dim_size; i++) {
-            Sw[i] *= wTSw;
+        for(int32_t t=0;t<e_args->dim_size;t++){
+		e_args->Sw[t]=e_args->eig_vec[t];
+	}
+	// memcpy(Sw, eig_vec, dim_size * sizeof(float));
+        
+	for(i = 0; i < e_args->dim_size; i++) {
+            e_args->Sw[i] *= wTSw;
         }
 
         // Finally, do the outer product between w and w'*S*w*w', which is stored in variable Sw
@@ -159,7 +149,7 @@ void eig_decomp(arm_matrix_instance_f32* matrix, struct eig_decomp_args* e_args)
 
         // Last, subtract the deflation matrix from S.
         for(i = 0; i < e_args->dim_size*e_args->dim_size; i++){
-            matrix[i] -= e_args->deflation_matrix[i];
+            matrix->pData[i]-= e_args->deflation_matrix[i];
         }
 	
     }

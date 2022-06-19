@@ -3,13 +3,13 @@
 #include "arm_math.h"
 
 #define ARMCM4_FP
-#define VEC_NUM 8U //256, 2^8 vectors, bin function after fft to reduce the size (2048->1024)
+#define VEC_NUM 256U
 #define VEC_LEN 256U //length 8
 #define BIN_NUM 8U
 
 extern float32_t input_data[];
 
-float32_t bin_group[VEC_NUM*BIN_NUM]; //change to 8 with data
+float32_t bin_group[VEC_NUM*BIN_NUM];
 float32_t tmp[VEC_LEN/2];
 float32_t cov_buffer[(BIN_NUM)];
 float32_t cov_mat_means[VEC_LEN/2];
@@ -162,9 +162,8 @@ void fix_directions(float32_t* eig_vec, uint32_t eig_vec_num, uint32_t bin_num)
     }
 }
 
-void bit_gen(){
+//void bit_gen(){}
 
-}
 
 void fft_pca(float32_t* input_data, struct fft_pca_args* args, struct eig_decomp_args* eig_input, uint32_t vec_len, uint32_t vec_num, uint32_t bin_num, uint8_t ifftFlag)
 { 

@@ -85,24 +85,24 @@ void fft_obs_matrix(uint32_t vec_len, uint32_t vec_num, uint8_t ifftFlag, float3
     }
 }
 
-float32_t mean(float32_t* vector, uint32_t vec_len, uint32_t vec_num)
+float32_t mean(float32_t* vector, uint32_t bin_num, uint32_t vec_num)
 {
     float32_t sum = 0;
 
     for (uint32_t i = 0; i < vec_num; i++)
     {
-        sum += vector[i*vec_len]; // because matrices are row major instead of column major
+        sum += vector[i*bin_num]; // because matrices are row major instead of column major
     }
 
     return sum / vec_num;
 }
 
-void calc_means(float32_t* input_data, float32_t* cov_mat_means, uint32_t vec_len, uint32_t vec_num)
+void calc_means(float32_t* bin_group, float32_t* cov_mat_means, uint32_t bin_num, uint32_t vec_num)
 {
-    for (uint32_t i = 0; i < vec_len; i++)
+    for (uint32_t i = 0; i < bin_num; i++)
     {
         cov_mat_means[i] = 0;
-        cov_mat_means[i] = mean(&input_data[i], vec_len, vec_num);
+        cov_mat_means[i] = mean(&bin_group[i], bin_num, vec_num);
     } 
 }
 

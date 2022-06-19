@@ -79,11 +79,11 @@ int power_iteration(arm_matrix_instance_f32* mat, struct eig_decomp_args* args)
     float32_t err = 0;
     uint32_t i = 0;
     
-    for (i = 0; i < dim_size; i++)
-    {
-        eig_vec[i] = 1;
+    for(int32_t j = 0; j < dim_size; j++){
+        eig_vec[j]=1;
     }
 
+    
     for (i = 0; i < execs; i++)
     {
         arm_mat_vec_mult_f32(mat, eig_vec, s);
@@ -109,11 +109,12 @@ int power_iteration(arm_matrix_instance_f32* mat, struct eig_decomp_args* args)
 void eig_decomp(arm_matrix_instance_f32* matrix, struct eig_decomp_args* e_args) {
     int32_t i,k;
     uint32_t nvecs = e_args->eig_vec_num;
+
     
     for(k = 0; k < nvecs; k++) {
 
         // First, use power iteration to extract the dominant eigenvector of matrix.
-        
+        power_iteration(matrix, e_args);
         // Copy eigenvector into output buffer for extracted eigenvectors
         for(int s =0; s<e_args->dim_size;s++) {
 		e_args->eig_vec[k*e_args->dim_size+s]=e_args->eig_vec[s];

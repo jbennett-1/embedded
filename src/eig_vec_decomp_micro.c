@@ -5,8 +5,52 @@
 #include <math.h>
 
 void normalize(float32_t* vec, uint32_t vec_len);
-float l1_error(float32_t* new_vec, float32_t* old_vec, uint32_t vec_len);
-void matrix_vec_mult(float32_t* mat, uint32_t dim_size, float32_t* vec, float32_t* new_vec);
+float32_t l1_error(float32_t* new_vec, float32_t* old_vec, uint32_t vec_len);
+
+void bit_gen(float32_t* eig_vec,struct eig_decomp_args* e_args){
+    uint32_t mean, max, min, sum, bit_adder=0;
+    uint16_t i, k, t;
+    uint32_t dim_size = e_args->dim_size;    
+    
+    for(i = 0;i < dim_size * e_args->eig_vec_num;i++) {
+	sum += eig_vec[i];
+        mean = mean / (dim_size*4);
+    }
+
+    for(k = 0; k < dim_size*4; k++) {
+	if(eig_vec[i] > max) { //max
+	    max = eig_vec[k];
+    	}
+
+	if(eig_vec[i] < min) { //min
+	    min = eig_vec[k];
+	}
+    }
+
+    for(t = 0;t < dim_size*4; t++) {
+	    bit_adder = eig_vec[t];
+	if(eig_vec[t] > mean){
+	    bit_adder |=  1 << 0; //can't use |= with a float, store value in int
+        } else {
+            bit_adder !=  0 << 0;
+        }
+
+	if(bit_adder |= 1 << 0) {
+	    if(bit_adder > (max + mean) / 2) {
+		bit_adder |=  1 << 1;
+    	    } else {
+		bit_adder |= 0 << 1;
+	    }
+	}
+	if(bit_adder |= 0 << 0) {
+	    if(bit_adder > (max + mean) /2) {
+	 	bit_adder |= 1 << 1;
+	    } else {
+		bit_adder |= 1 << 1;
+	    }
+	}
+    }   
+}
 
 void normalize(float32_t* vec, uint32_t vec_len)
 {
@@ -78,11 +122,12 @@ int power_iteration(arm_matrix_instance_f32* mat, struct eig_decomp_args* args)
     float32_t err_tol = args->err_tol;
     float32_t err = 0;
     uint32_t i = 0;
-    
-    for(int32_t j = 0; j < dim_size; j++){
-        eig_vec[j]=1;
+   
+    for (int i = 0; i < dim_size; i++)
+    {
+        args->eig_vec[i] = 1;
     }
-
+ 
     
     for (i = 0; i < execs; i++)
     {
@@ -107,17 +152,20 @@ int power_iteration(arm_matrix_instance_f32* mat, struct eig_decomp_args* args)
 
 
 void eig_decomp(arm_matrix_instance_f32* matrix, struct eig_decomp_args* e_args) {
+    float* eig_vec = e_args->eig_vec;
+    float* Sw = e_args->Sw;
+    float* deflation_matrix = e_args->deflation_matrix;
     int32_t i,k;
     uint32_t nvecs = e_args->eig_vec_num;
-
+    uint32_t dim_size = e_args->dim_size;
     
     for(k = 0; k < nvecs; k++) {
 
         // First, use power iteration to extract the dominant eigenvector of matrix.
         power_iteration(matrix, e_args);
         // Copy eigenvector into output buffer for extracted eigenvectors
-        for(int s =0; s<e_args->dim_size;s++) {
-		e_args->eig_vec[k*e_args->dim_size+s]=e_args->eig_vec[s];
+        for(int s =0; s<dim_size;s++) {
+		e_args->eig_vec[k*dim_size+s]=eig_vec[s];
 	}
 
         // Deflate the dominant eigenvector from the matrid
@@ -129,28 +177,27 @@ void eig_decomp(arm_matrix_instance_f32* matrix, struct eig_decomp_args* e_args)
         //         |   outer product      |
         // matrix vector multiplication S*w
         // verified correct result (Sw) in Matlab
-        arm_mat_vec_mult_f32(matrix, e_args->eig_vec, e_args->Sw);
+        arm_mat_vec_mult_f32(matrix, eig_vec, Sw);
 
         // inner product w'*S*w
         // verified correct result wTSw in Matlab
-        float32_t wTSw = inner_product(e_args->Sw, e_args->eig_vec, e_args->dim_size);
+        float32_t wTSw = inner_product(Sw, eig_vec, dim_size);
 
         // Element-wise multiplication.
-        for(int32_t t=0;t<e_args->dim_size;t++){
-		e_args->Sw[t]=e_args->eig_vec[t];
+        for(int32_t t=0;t<dim_size;t++){
+		Sw[t]=eig_vec[t];
 	}
-	// memcpy(Sw, eig_vec, dim_size * sizeof(float));
         
-	for(i = 0; i < e_args->dim_size; i++) {
-            e_args->Sw[i] *= wTSw;
+	for(i = 0; i < dim_size; i++) {
+            Sw[i] *= wTSw;
         }
 
         // Finally, do the outer product between w and w'*S*w*w', which is stored in variable Sw
-        outer_product(e_args->eig_vec, e_args->Sw, e_args->dim_size, e_args->deflation_matrix);
+        outer_product(eig_vec, Sw, dim_size, deflation_matrix);
 
         // Last, subtract the deflation matrix from S.
-        for(i = 0; i < e_args->dim_size*e_args->dim_size; i++){
-            matrix->pData[i]-= e_args->deflation_matrix[i];
+        for(i = 0; i < dim_size*dim_size; i++){
+            matrix->pData[i]-= deflation_matrix[i];
         }
 	
     }

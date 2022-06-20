@@ -7,14 +7,17 @@
 #define VEC_LEN 256U //length 8
 #define BIN_NUM 8U
 
+void bit_gen(float32_t* eig_vec,struct eig_decomp_args* e_args);
+
 extern float32_t input_data[];
 
 float32_t bin_group[VEC_NUM*BIN_NUM];
 float32_t tmp[VEC_LEN/2];
 float32_t cov_buffer[(BIN_NUM)];
 float32_t cov_mat_means[VEC_LEN/2];
-float32_t eig_buffer[VEC_LEN/2];
-float32_t s_buffer[VEC_LEN];
+float32_t eig_buffer[BIN_NUM*4]; //RECENT
+float32_t s[BIN_NUM]; //RECENT
+
 
 arm_matrix_instance_f32 matrix_buffer;
 arm_rfft_fast_instance_f32 fft_data;
@@ -28,8 +31,6 @@ struct fft_pca_args{
     float32_t* cov_mat_means;
     float32_t* output_buffer;
     float32_t* tmp;
-    float32_t* Sw;
-    float32_t* deflation_matrix;
      
     arm_matrix_instance_f32* matrix_buffer;
     uint32_t vec_len;
@@ -43,7 +44,9 @@ struct fft_pca_args{
 
 };
 
-void initialize(float32_t *Sw, float32_t *deflation_matrix, uint32_t bin_num, float32_t* bin_group, float32_t* s_buffer, float32_t* tmp, struct eig_decomp_args* eig_input, struct fft_pca_args* input, arm_matrix_instance_f32* matrix_buffer, float32_t* input_data, uint32_t vec_len, uint32_t vec_num, arm_rfft_fast_instance_f32* fft_data, uint32_t fftLen, uint8_t ifftFlag, float32_t* cov_buffer, float32_t* cov_mat_means, float32_t* eig_buffer)
+
+
+void initialize(float32_t *Sw, float32_t *deflation_matrix, uint32_t bin_num, float32_t* bin_group, float32_t* s, float32_t* tmp, struct eig_decomp_args* eig_input, struct fft_pca_args* input, arm_matrix_instance_f32* matrix_buffer, float32_t* input_data, uint32_t vec_len, uint32_t vec_num, arm_rfft_fast_instance_f32* fft_data, uint32_t fftLen, uint8_t ifftFlag, float32_t* cov_buffer, float32_t* cov_mat_means, float32_t* eig_buffer)
 {
     input->bin_num=bin_num;
     input->bin_group=bin_group;
@@ -64,8 +67,8 @@ void initialize(float32_t *Sw, float32_t *deflation_matrix, uint32_t bin_num, fl
     eig_input->Sw = Sw;
     eig_input->deflation_matrix=deflation_matrix;
     eig_input->eig_vec=eig_buffer;
-    eig_input->dim_size=bin_num;
-    eig_input->s=s_buffer;
+    eig_input->dim_size=BIN_NUM;
+    eig_input->s=s;
     eig_input->execs=10000;
     eig_input->err_tol=0.01;
     eig_input->eig_vec_num=4;
@@ -162,8 +165,6 @@ void fix_directions(float32_t* eig_vec, uint32_t eig_vec_num, uint32_t bin_num)
     }
 }
 
-//void bit_gen(){}
-
 
 void fft_pca(float32_t* input_data, struct fft_pca_args* args, struct eig_decomp_args* eig_input, uint32_t vec_len, uint32_t vec_num, uint32_t bin_num, uint8_t ifftFlag)
 { 
@@ -176,7 +177,7 @@ void fft_pca(float32_t* input_data, struct fft_pca_args* args, struct eig_decomp
     
     eig_decomp(&matrix_buffer, eig_input);
     fix_directions(eig_input->eig_vec, eig_input->eig_vec_num, bin_num);
-    //bit_gen();
+    bit_gen(eig_input->eig_vec, eig_input);
 }
 
 void main(){
@@ -191,10 +192,10 @@ void main(){
     uint32_t bin_num=BIN_NUM;
     uint32_t fftLen=VEC_LEN;
 
-    float32_t deflation_matrix[BIN_NUM*BIN_NUM];
-    float32_t Sw[BIN_NUM];        
+    float32_t deflation_matrix[BIN_NUM*BIN_NUM]; //RECENT
+    float32_t Sw[BIN_NUM]; //RECENT
 
-    initialize(Sw, deflation_matrix, bin_num, bin_group, s_buffer, tmp, &eig_input, &args, &matrix_buffer, input_data, vec_len, vec_num, &fft_data, fftLen, ifftFlag, cov_buffer, cov_mat_means, eig_buffer);
+    initialize(Sw, deflation_matrix, bin_num, bin_group, s, tmp, &eig_input, &args, &matrix_buffer, input_data, vec_len, vec_num, &fft_data, fftLen, ifftFlag, cov_buffer, cov_mat_means, eig_buffer);
 
     SysTick->CTRL=0;
     SysTick->VAL=0;
@@ -205,6 +206,6 @@ void main(){
     arm_rfft_fast_init_f32(&fft_data, fftLen);  
     arm_mat_init_f32(&matrix_buffer, vec_len, vec_num, input_data);
 
-    fft_pca(input_data,  &args, &eig_input, vec_len, vec_num, bin_num, ifftFlag);
+    fft_pca(input_data, &args, &eig_input, vec_len, vec_num, bin_num, ifftFlag);
 }
 

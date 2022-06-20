@@ -6,6 +6,7 @@
 
 void normalize(float32_t* vec, uint32_t vec_len);
 float32_t l1_error(float32_t* new_vec, float32_t* old_vec, uint32_t vec_len);
+void matrix_vec_mult(float32_t* mat, uint32_t dim_size, float32_t* vec, float32_t* new_vec);
 
 void bit_gen(float32_t* eig_vec,struct eig_decomp_args* e_args){
     uint32_t mean, max, min, sum, bit_adder=0;
@@ -14,7 +15,7 @@ void bit_gen(float32_t* eig_vec,struct eig_decomp_args* e_args){
     
     for(i = 0;i < dim_size * e_args->eig_vec_num;i++) {
 	sum += eig_vec[i];
-        mean = mean / (dim_size*4);
+        mean = sum / (dim_size*4);
     }
 
     for(k = 0; k < dim_size*4; k++) {
@@ -25,23 +26,20 @@ void bit_gen(float32_t* eig_vec,struct eig_decomp_args* e_args){
 	if(eig_vec[i] < min) { //min
 	    min = eig_vec[k];
 	}
-    }
+     }
 
     for(t = 0;t < dim_size*4; t++) {
-	    bit_adder = eig_vec[t];
-	if(eig_vec[t] > mean){
-	    bit_adder |=  1 << 0; //can't use |= with a float, store value in int
-        } else {
-            bit_adder !=  0 << 0;
-        }
+	bit_adder = eig_vec[t];
+        bit_adder |= (mean>0) ? 1 : 0;
+        bit_adder <<=1;
+        bit_adder <<=0;
 
-	if(bit_adder |= 1 << 0) {
-	    if(bit_adder > (max + mean) / 2) {
-		bit_adder |=  1 << 1;
-    	    } else {
-		bit_adder |= 0 << 1;
-	    }
+        if(bit_adder > (max + mean) / 2) {
+	    bit_adder |=  1 << 1;
+    	} else {
+	    bit_adder |= 0 << 1;
 	}
+
 	if(bit_adder |= 0 << 0) {
 	    if(bit_adder > (max + mean) /2) {
 	 	bit_adder |= 1 << 1;
@@ -66,6 +64,18 @@ void normalize(float32_t* vec, uint32_t vec_len)
     for (int32_t i = 0; i < vec_len; i++)
     {
         vec[i] = vec[i] / norm;
+    }
+}
+
+void matrix_vec_mult(float32_t* mat, uint32_t dim_size, float32_t* vec, float32_t* new_vec)
+{
+    for (int32_t i = 0; i < dim_size; i++)
+    {
+        new_vec[i] = 0;
+        for (int32_t j = 0; j < dim_size; j++)
+        {
+            new_vec[i] += mat[i*dim_size + j] * vec[j];
+        }
     }
 }
 
@@ -113,26 +123,26 @@ void outer_product(float32_t *a, float32_t *b, uint32_t dim_size, float32_t *out
     }   
 }
 
-int power_iteration(arm_matrix_instance_f32* mat, struct eig_decomp_args* args)
+int power_iteration(arm_matrix_instance_f32* matrix, struct eig_decomp_args* e_args)
 {
-    float32_t* eig_vec = args->eig_vec;
-    float32_t* s = args->s;
-    uint32_t dim_size = args->dim_size;
-    uint32_t execs = args->execs;
-    float32_t err_tol = args->err_tol;
+    float32_t* eig_vec = e_args->eig_vec;
+    float32_t* s = e_args->s;
+    uint32_t dim_size = e_args->dim_size;
+    uint32_t execs = e_args->execs;
+    float32_t err_tol = e_args->err_tol;
     float32_t err = 0;
     uint32_t i = 0;
    
     for (int i = 0; i < dim_size; i++)
     {
-        args->eig_vec[i] = 1;
+        eig_vec[i] = 1;
     }
  
     
     for (i = 0; i < execs; i++)
     {
-        arm_mat_vec_mult_f32(mat, eig_vec, s);
-        normalize(s, dim_size);
+        matrix_vec_mult(matrix->pData, dim_size, eig_vec, e_args->s);
+	normalize(s, dim_size);
         err = l1_error(s, eig_vec, dim_size);
 
         // swap the buffers for eigen vectors
@@ -144,17 +154,17 @@ int power_iteration(arm_matrix_instance_f32* mat, struct eig_decomp_args* args)
             break;
     }
 
-    args->eig_vec = eig_vec;
-    args->s = s;
+    eig_vec = eig_vec;
+    s = s;
 
     return i;
 }
 
 
 void eig_decomp(arm_matrix_instance_f32* matrix, struct eig_decomp_args* e_args) {
-    float* eig_vec = e_args->eig_vec;
-    float* Sw = e_args->Sw;
-    float* deflation_matrix = e_args->deflation_matrix;
+    float32_t* eig_vec = e_args->eig_vec;
+    float32_t* Sw = e_args->Sw;
+    float32_t* deflation_matrix = e_args->deflation_matrix;
     int32_t i,k;
     uint32_t nvecs = e_args->eig_vec_num;
     uint32_t dim_size = e_args->dim_size;
@@ -165,7 +175,7 @@ void eig_decomp(arm_matrix_instance_f32* matrix, struct eig_decomp_args* e_args)
         power_iteration(matrix, e_args);
         // Copy eigenvector into output buffer for extracted eigenvectors
         for(int s =0; s<dim_size;s++) {
-		e_args->eig_vec[k*dim_size+s]=eig_vec[s];
+		eig_vec[k*dim_size+s]=eig_vec[s];
 	}
 
         // Deflate the dominant eigenvector from the matrid
@@ -177,7 +187,7 @@ void eig_decomp(arm_matrix_instance_f32* matrix, struct eig_decomp_args* e_args)
         //         |   outer product      |
         // matrix vector multiplication S*w
         // verified correct result (Sw) in Matlab
-        arm_mat_vec_mult_f32(matrix, eig_vec, Sw);
+        matrix_vec_mult(matrix->pData, dim_size, eig_vec, Sw);
 
         // inner product w'*S*w
         // verified correct result wTSw in Matlab

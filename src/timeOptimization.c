@@ -4,19 +4,21 @@
 
 #define ARMCM4_FP
 #define VEC_NUM 256U
-#define VEC_LEN 256U //length 8
+#define VEC_LEN 512U
 #define BIN_NUM 8U
 
 void bit_gen(float32_t* eig_vec,struct eig_decomp_args* e_args);
 
-extern float32_t input_data[];
+extern float32_t input_data[VEC_LEN*VEC_NUM];
 
 float32_t bin_group[VEC_NUM*BIN_NUM];
-float32_t tmp[VEC_LEN/2];
+float32_t tmp[VEC_LEN];
 float32_t cov_buffer[(BIN_NUM)];
-float32_t cov_mat_means[VEC_LEN/2];
-float32_t eig_buffer[BIN_NUM*4]; //RECENT
+float32_t cov_mat_means[BIN_NUM]; //Not sure on this ***
+float32_t eig_buffer[BIN_NUM]; //RECENT
 float32_t s[BIN_NUM]; //RECENT
+float32_t deflation_matrix[BIN_NUM*BIN_NUM]; //RECENT
+float32_t Sw[BIN_NUM]; //RECENT
 
 
 arm_matrix_instance_f32 matrix_buffer;
@@ -41,7 +43,6 @@ struct fft_pca_args{
     arm_rfft_fast_instance_f32* fft_data;
     uint32_t fftLen;
     uint8_t ifftFlag;
-
 };
 
 
@@ -51,7 +52,6 @@ void initialize(float32_t *Sw, float32_t *deflation_matrix, uint32_t bin_num, fl
     input->bin_num=bin_num;
     input->bin_group=bin_group;
     input->input_data=input_data;
-    input->eig_buffer=eig_buffer;
     input->cov_buffer=cov_buffer;
     input->cov_mat_means=cov_mat_means;
 
@@ -67,7 +67,7 @@ void initialize(float32_t *Sw, float32_t *deflation_matrix, uint32_t bin_num, fl
     eig_input->Sw = Sw;
     eig_input->deflation_matrix=deflation_matrix;
     eig_input->eig_vec=eig_buffer;
-    eig_input->dim_size=BIN_NUM;
+    eig_input->dim_size=bin_num;
     eig_input->s=s;
     eig_input->execs=10000;
     eig_input->err_tol=0.01;
@@ -111,18 +111,16 @@ void calc_means(float32_t* bin_group, float32_t* cov_mat_means, uint32_t bin_num
 
 void bin(struct fft_pca_args* args, float32_t* bin_group, uint32_t bin_num, float32_t* input_data, uint32_t vec_len, uint32_t vec_num)
 {
-   uint32_t bins=8;
-   uint32_t block_size = vec_len/bins;
+   uint32_t block_size = vec_len/bin_num;
 
    for(uint32_t e = 0; e < vec_num; e++) { //iterator through bins
-	for(uint32_t i=0; i < bins; i++) { 
+	for(uint32_t i=0; i < bin_num; i++) { 
 	    for(uint32_t b=0; b < block_size; b++) {
-		bin_group[i+e*bins] = input_data[i*block_size+b+e*vec_len];
+		bin_group[i+e*bin_num] = input_data[i*block_size+b+e*vec_len];
     	    }
 	} 
     }
-    args->matrix_buffer->pData=bin_group;
-    args->matrix_buffer->numRows=bin_num;
+    arm_mat_init_f32(&matrix_buffer,bin_num,(bin_num*bin_num),bin_group);
 }
 
 void cov(float32_t* bin_group, float32_t* cov_buffer, float32_t* cov_mat_means, uint32_t bin_num, uint32_t vec_num)
@@ -191,9 +189,6 @@ void main(){
     uint32_t vec_num = VEC_NUM;
     uint32_t bin_num=BIN_NUM;
     uint32_t fftLen=VEC_LEN;
-
-    float32_t deflation_matrix[BIN_NUM*BIN_NUM]; //RECENT
-    float32_t Sw[BIN_NUM]; //RECENT
 
     initialize(Sw, deflation_matrix, bin_num, bin_group, s, tmp, &eig_input, &args, &matrix_buffer, input_data, vec_len, vec_num, &fft_data, fftLen, ifftFlag, cov_buffer, cov_mat_means, eig_buffer);
 

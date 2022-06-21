@@ -85,7 +85,8 @@ float32_t l1_error(float32_t* new_vec, float32_t* old_vec, uint32_t vec_len)
 
     for (int32_t i = 0; i < vec_len; i++)
     {
-        error += fabsf(new_vec[i] - old_vec[i]);
+    error = (new_vec[i]-old_vec[i] < 0) ? -(new_vec[i]-old_vec[i]) : (new_vec[i] - old_vec[i]);
+//    error += fabsf(new_vec[i] - old_vec[i]);
     }
 
     return error;
